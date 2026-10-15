@@ -4,7 +4,7 @@
 	"version": "1.0.0",
 	"minAppVersion": "1.8.7",
 	"description": "Keep all daily notes in one file. Capture a line with a hotkey, pick recent or frequent tags, and jump to any day from a sidebar calendar.",
-	"author": "TBD",
-	"authorUrl": "",
+	"author": "hztoyr",
+	"authorUrl": "https://github.com/hztoyr",
 	"isDesktopOnly": false
 }
