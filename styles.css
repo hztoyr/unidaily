@@ -1,0 +1,142 @@
+/* Unidaily styles */
+
+/* Capture modal */
+.unidaily-capture-input {
+	width: 100%;
+}
+
+.unidaily-tag-rows {
+	margin-top: var(--size-4-3);
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+}
+
+.unidaily-tag-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--size-4-1) var(--size-4-2);
+}
+
+.unidaily-tag-label,
+.unidaily-tag-hint {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.unidaily-tag-label {
+	min-width: 3em;
+}
+
+.unidaily-capture-modal button.unidaily-tag {
+	height: auto;
+	padding: var(--tag-padding-y) var(--tag-padding-x);
+	border: var(--tag-border-width) solid var(--tag-border-color);
+	border-radius: var(--tag-radius);
+	background-color: var(--tag-background);
+	color: var(--tag-color);
+	font-size: var(--font-ui-small);
+	box-shadow: none;
+	cursor: var(--cursor);
+}
+
+.unidaily-capture-modal button.unidaily-tag:hover {
+	background-color: var(--tag-background-hover);
+}
+
+.unidaily-capture-modal button.unidaily-tag.is-active {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+/* Sidebar calendar */
+.unidaily-calendar {
+	padding: var(--size-4-2);
+}
+
+.unidaily-calendar-nav {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+	margin-bottom: var(--size-4-2);
+}
+
+.unidaily-calendar-title {
+	font-weight: var(--font-semibold);
+}
+
+.unidaily-calendar-buttons {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-1);
+}
+
+.unidaily-calendar-today {
+	font-size: var(--font-ui-smaller);
+	padding: var(--size-2-1) var(--size-4-2);
+	height: auto;
+}
+
+.unidaily-calendar-grid {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: var(--size-2-1);
+}
+
+.unidaily-calendar-weekday {
+	text-align: center;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	padding-bottom: var(--size-2-2);
+}
+
+.unidaily-calendar button.unidaily-calendar-day {
+	position: relative;
+	height: 2.2em;
+	padding: 0;
+	background: none;
+	box-shadow: none;
+	border-radius: var(--radius-s);
+	font-size: var(--font-ui-small);
+	font-variant-numeric: tabular-nums;
+	color: var(--text-normal);
+	cursor: var(--cursor);
+}
+
+.unidaily-calendar button.unidaily-calendar-day:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.unidaily-calendar button.unidaily-calendar-day.is-outside {
+	color: var(--text-faint);
+}
+
+.unidaily-calendar button.unidaily-calendar-day.is-today {
+	color: var(--text-accent);
+	font-weight: var(--font-bold);
+	background-color: var(--background-modifier-hover);
+}
+
+.unidaily-calendar-dot {
+	position: absolute;
+	left: 50%;
+	bottom: 3px;
+	width: 4px;
+	height: 4px;
+	margin-left: -2px;
+	border-radius: 50%;
+	background-color: var(--text-accent);
+}
+
+.unidaily-calendar-day.is-outside .unidaily-calendar-dot {
+	opacity: 0.5;
+}
+
+/* Settings: live preview of today's date heading */
+.unidaily-setting-preview {
+	margin-top: var(--size-4-1);
+	font-family: var(--font-monospace);
+	color: var(--text-normal);
+}

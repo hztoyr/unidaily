@@ -1,0 +1,150 @@
+import { ItemView, Notice, TAbstractFile, WorkspaceLeaf, moment, setIcon } from "obsidian";
+import { monthGrid, type GridDay } from "./calendar.ts";
+import type { Translator } from "./i18n.ts";
+import { indexHeadings } from "./journal.ts";
+import { openJournal, readJournal } from "./journal-file.ts";
+import type { UnidailySettings } from "./settings.ts";
+
+export const VIEW_TYPE_CALENDAR = "unidaily-calendar";
+
+/** What the calendar needs from the plugin. */
+export interface CalendarHost {
+	settings: UnidailySettings;
+	t: Translator;
+}
+
+/**
+ * Sidebar month calendar (FR-15, FR-16, OPT-1). Days that have a date heading
+ * in the journal get a dot; clicking one opens the journal at that heading.
+ */
+export class CalendarView extends ItemView {
+	private readonly host: CalendarHost;
+	/** First day of the displayed month. */
+	private month = moment().startOf("month");
+	private today = moment().format("YYYY-MM-DD");
+	private renderId = 0;
+
+	constructor(leaf: WorkspaceLeaf, host: CalendarHost) {
+		super(leaf);
+		this.host = host;
+	}
+
+	getViewType(): string {
+		return VIEW_TYPE_CALENDAR;
+	}
+
+	getDisplayText(): string {
+		return this.host.t("calendar.title");
+	}
+
+	getIcon(): string {
+		return "calendar-days";
+	}
+
+	async onOpen(): Promise<void> {
+		const isJournal = (file: TAbstractFile) => file.path === this.host.settings.journalPath;
+		const refreshIf = (file: TAbstractFile, oldPath?: string) => {
+			if (isJournal(file) || oldPath === this.host.settings.journalPath) void this.refresh();
+		};
+		this.registerEvent(this.app.vault.on("modify", (file) => refreshIf(file)));
+		this.registerEvent(this.app.vault.on("create", (file) => refreshIf(file)));
+		this.registerEvent(this.app.vault.on("delete", (file) => refreshIf(file)));
+		this.registerEvent(this.app.vault.on("rename", (file, oldPath) => refreshIf(file, oldPath)));
+
+		// Move the "today" highlight after midnight.
+		this.registerInterval(
+			window.setInterval(() => {
+				if (moment().format("YYYY-MM-DD") !== this.today) void this.refresh();
+			}, 60_000),
+		);
+
+		await this.refresh();
+	}
+
+	/** Re-reads the journal and redraws. Safe to call often; stale renders are dropped. */
+	async refresh(): Promise<void> {
+		const id = ++this.renderId;
+		const { settings } = this.host;
+		const content = await readJournal(this.app, settings.journalPath);
+		if (id !== this.renderId) return;
+		this.today = moment().format("YYYY-MM-DD");
+		this.draw(indexHeadings(content, settings.headingLevel));
+	}
+
+	private showMonth(month: moment.Moment): void {
+		this.month = month.clone().startOf("month");
+		void this.refresh();
+	}
+
+	private draw(headings: Map<string, number>): void {
+		const { t } = this.host;
+		const root = this.contentEl;
+		root.empty();
+		root.addClass("unidaily-calendar");
+
+		const nav = root.createDiv({ cls: "unidaily-calendar-nav" });
+		nav.createDiv({ cls: "unidaily-calendar-title", text: this.month.format(t("calendar.monthFormat")) });
+		const buttons = nav.createDiv({ cls: "unidaily-calendar-buttons" });
+		this.navButton(buttons, "chevron-left", t("calendar.prevMonth"), () =>
+			this.showMonth(this.month.clone().subtract(1, "month")),
+		);
+		buttons
+			.createEl("button", { cls: "unidaily-calendar-today", text: t("calendar.thisMonth") })
+			.addEventListener("click", () => this.showMonth(moment()));
+		this.navButton(buttons, "chevron-right", t("calendar.nextMonth"), () =>
+			this.showMonth(this.month.clone().add(1, "month")),
+		);
+
+		const grid = root.createDiv({ cls: "unidaily-calendar-grid" });
+		for (const name of moment.weekdaysMin(true)) {
+			grid.createDiv({ cls: "unidaily-calendar-weekday", text: name });
+		}
+
+		const firstDay = moment.localeData().firstDayOfWeek();
+		for (const week of monthGrid(this.month.year(), this.month.month(), firstDay)) {
+			for (const day of week) this.dayCell(grid, day, headings);
+		}
+	}
+
+	private navButton(parent: HTMLElement, icon: string, label: string, onClick: () => void): void {
+		const button = parent.createEl("button", { cls: "clickable-icon", attr: { "aria-label": label } });
+		setIcon(button, icon);
+		button.addEventListener("click", onClick);
+	}
+
+	private dayCell(grid: HTMLElement, day: GridDay, headings: Map<string, number>): void {
+		const date = moment([day.year, day.month, day.day]);
+		const line = this.lookup(date, headings);
+		const cell = grid.createEl("button", { cls: "unidaily-calendar-day", text: String(day.day) });
+		if (!day.inMonth) cell.addClass("is-outside");
+		if (date.format("YYYY-MM-DD") === this.today) cell.addClass("is-today");
+		if (line !== undefined) {
+			cell.addClass("has-entry");
+			cell.createDiv({ cls: "unidaily-calendar-dot" });
+		}
+		cell.addEventListener("click", () => void this.openDay(line));
+	}
+
+	/**
+	 * Finds the heading line of a date. Besides the current locale, the English
+	 * spelling is tried so headings written under an English UI still match.
+	 */
+	private lookup(date: moment.Moment, headings: Map<string, number>): number | undefined {
+		const { dateFormat } = this.host.settings;
+		const local = date.format(dateFormat).trimEnd();
+		return headings.get(local) ?? headings.get(date.clone().locale("en").format(dateFormat).trimEnd());
+	}
+
+	private async openDay(line: number | undefined): Promise<void> {
+		if (line === undefined) {
+			new Notice(this.host.t("notice.noEntry"));
+			return;
+		}
+		try {
+			await openJournal(this.app, this.host.settings.journalPath, line);
+		} catch (error) {
+			console.error("Unidaily:", error);
+			new Notice(error instanceof Error ? error.message : String(error));
+		}
+	}
+}
