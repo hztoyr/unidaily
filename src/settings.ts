@@ -14,6 +14,8 @@ export interface UnidailySettings {
 	recentTagCount: number;
 	/** Number of frequent tags in the capture modal; 0 hides the row. */
 	frequentTagCount: number;
+	/** Add the calendar to the right sidebar on startup when it isn't open. */
+	openCalendarOnStartup: boolean;
 }
 
 export const DEFAULT_SETTINGS: Readonly<UnidailySettings> = {
@@ -22,6 +24,7 @@ export const DEFAULT_SETTINGS: Readonly<UnidailySettings> = {
 	dateFormat: "YYYY-MM-DD dddd",
 	recentTagCount: 6,
 	frequentTagCount: 6,
+	openCalendarOnStartup: true,
 };
 
 export const MAX_TAG_COUNT = 20;
@@ -57,6 +60,10 @@ export function normalizeSettings(raw: unknown): UnidailySettings {
 				: DEFAULT_SETTINGS.dateFormat,
 		recentTagCount: intInRange(data.recentTagCount, 0, MAX_TAG_COUNT, DEFAULT_SETTINGS.recentTagCount),
 		frequentTagCount: intInRange(data.frequentTagCount, 0, MAX_TAG_COUNT, DEFAULT_SETTINGS.frequentTagCount),
+		openCalendarOnStartup:
+			typeof data.openCalendarOnStartup === "boolean"
+				? data.openCalendarOnStartup
+				: DEFAULT_SETTINGS.openCalendarOnStartup,
 	};
 }
 

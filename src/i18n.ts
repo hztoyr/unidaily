@@ -48,6 +48,9 @@ const en = {
 	"settings.recentCount.desc": "Number of recently used tags shown in the capture window. 0 hides the row.",
 	"settings.frequentCount.name": "Frequent tags",
 	"settings.frequentCount.desc": "Number of most used tags in the vault shown in the capture window. 0 hides the row.",
+	"settings.openCalendar.name": "Open calendar on startup",
+	"settings.openCalendar.desc":
+		"Add the calendar to the right sidebar when Obsidian starts and it isn't open. When off, use the \"Open calendar\" command.",
 } as const;
 
 export type StringKey = keyof typeof en;
@@ -90,6 +93,8 @@ const zh: Record<StringKey, string> = {
 	"settings.recentCount.desc": "记录窗口中显示的最近用过的标签数量。0 表示不显示该行。",
 	"settings.frequentCount.name": "常用标签显示数量",
 	"settings.frequentCount.desc": "记录窗口中显示的库中最常用的标签数量。0 表示不显示该行。",
+	"settings.openCalendar.name": "启动时自动打开日历",
+	"settings.openCalendar.desc": "Obsidian 启动时，如果日历没有打开，就把它放到右侧边栏。关闭后，可以用\"打开日历\"命令手动打开。",
 };
 
 export type Locale = "en" | "zh";

@@ -45,6 +45,7 @@ export default class UnidailyPlugin extends Plugin {
 
 		// Put the calendar in the right sidebar unless the layout already has one (FR-15).
 		this.app.workspace.onLayoutReady(() => {
+			if (!this.settings.openCalendarOnStartup) return;
 			if (this.app.workspace.getLeavesOfType(VIEW_TYPE_CALENDAR).length === 0) {
 				void this.app.workspace.getRightLeaf(false)?.setViewState({ type: VIEW_TYPE_CALENDAR });
 			}

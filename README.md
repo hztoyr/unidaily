@@ -62,6 +62,7 @@ Unidaily sets no default hotkeys. Assign your own under **Settings → Hotkeys**
 | Date format | `YYYY-MM-DD dddd` | [Moment.js format](https://momentjs.com/docs/#/displaying/format/); a live preview is shown |
 | Recent tags | 6 | 0 hides the row |
 | Frequent tags | 6 | 0 hides the row |
+| Open calendar on startup | On | When off, the calendar stays closed until you run *Open calendar* |
 
 Weekday and month names follow Obsidian's interface language. Changing the heading level or date format does **not** rewrite existing headings; days whose headings no longer match the format won't be found by the calendar. Headings written with English weekday names are still found when the interface is in another language.
 

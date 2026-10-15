@@ -38,6 +38,7 @@ describe("normalizeSettings", () => {
 			dateFormat: "YYYY/MM/DD",
 			recentTagCount: 0,
 			frequentTagCount: 10,
+			openCalendarOnStartup: false,
 		};
 		assert.deepEqual(normalizeSettings(stored), stored);
 	});
@@ -55,8 +56,19 @@ describe("normalizeSettings", () => {
 	});
 
 	test("wrong types fall back to the defaults", () => {
-		const s = normalizeSettings({ journalPath: 42, headingLevel: "3", dateFormat: "  ", recentTagCount: NaN });
+		const s = normalizeSettings({
+			journalPath: 42,
+			headingLevel: "3",
+			dateFormat: "  ",
+			recentTagCount: NaN,
+			openCalendarOnStartup: "false",
+		});
 		assert.deepEqual(s, DEFAULT_SETTINGS);
+	});
+
+	test("calendar on startup defaults to on", () => {
+		assert.equal(normalizeSettings({}).openCalendarOnStartup, true);
+		assert.equal(normalizeSettings({ openCalendarOnStartup: false }).openCalendarOnStartup, false);
 	});
 
 	test("unknown fields are dropped", () => {
