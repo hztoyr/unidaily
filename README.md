@@ -1,12 +1,24 @@
 # Unidaily
 
-Keep all your daily notes in **one file**. Capture a line with a hotkey without leaving the note you're in, add tags with a click, and jump to any day from a sidebar calendar.
+Keep all your daily notes in **one file**. Press a hotkey, type a line, press Enter: it lands under today's date without opening the file. Recent and frequent tags are one click away, and a sidebar calendar takes you to any day.
 
-[中文说明](#中文说明)
+**English** · [中文说明](#中文说明)
 
-## Why
+## Contents
 
-Most daily-note setups create one file per day. If you only write a sentence or two, and not every day, that leaves you with lots of tiny files. Unidaily keeps everything in a single Markdown file with one heading per day, newest day on top:
+- [Why one file](#why-one-file)
+- [Installation](#installation)
+- [Getting started](#getting-started)
+- [Capturing entries](#capturing-entries)
+- [Tags](#tags)
+- [Calendar](#calendar)
+- [Settings](#settings)
+- [Moving from QuickAdd + Single File Daily Notes](#moving-from-quickadd--single-file-daily-notes)
+- [FAQ](#faq)
+
+## Why one file
+
+The usual daily-notes setup creates a new file every day. If you only write a sentence or two, and not every day, you end up with a folder full of tiny files. Unidaily keeps everything in a single Markdown file with one heading per day, newest day on top:
 
 ```markdown
 ### 2026-10-15 Thursday
@@ -18,81 +30,107 @@ Most daily-note setups create one file per day. If you only write a sentence or 
 - Finished reading a book, the ending was so-so #reading
 ```
 
-## Features
+The journal is an ordinary note: you can edit, search and link it as usual, and if you ever remove the plugin your notes stay exactly as they are.
 
-- **Capture window.** Run *Capture note* or *Capture task*, type a line and press Enter. It goes under today's heading in the journal file. The note you're editing is not touched, and no file is opened.
-- **Tag suggestions.** The capture window shows the tags you used **recently** in the journal and the tags used **most** across your vault. Click a tag to add it, click again to remove it. Type `#` to get completion for any tag in the vault.
-- **Sidebar calendar.** A month view in the right sidebar. Days that have entries are marked with a dot; click one to jump to its heading.
-- **Plain Markdown.** The journal is an ordinary note: edit, search and link it as usual. Uninstalling the plugin leaves your notes exactly as they are.
-- **Desktop and mobile.** Works on both. No network access and no data collection.
-- **English and Chinese UI**, following Obsidian's interface language.
+## Installation
 
-## Usage
+**From Obsidian**
+1. Open **Settings → Community plugins** and turn off Restricted mode if it's on.
+2. Select **Browse**, search for **Unidaily**, then **Install** and **Enable**.
 
-### Commands
+**Manually**
+1. Download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/hztoyr/unidaily/releases/latest).
+2. Put them in `<your vault>/.obsidian/plugins/unidaily/`.
+3. Restart Obsidian and enable **Unidaily** under **Settings → Community plugins**.
+
+Requires Obsidian 1.8.7 or later. Works on desktop and mobile.
+
+## Getting started
+
+1. **Pick your journal file.** By default it's `Daily Notes.md` in the vault root. You can change it under **Settings → Unidaily**. The file and its folder are created the first time you write an entry.
+2. **Assign hotkeys.** Unidaily sets no hotkeys by default. Open **Settings → Hotkeys**, search for "Unidaily", and assign keys to **Capture note** and **Capture task**.
+3. **Write your first entry.** Press your hotkey, type a line and press Enter.
+
+You can also run every command from the command palette (`Ctrl/Cmd + P`):
 
 | Command | What it does |
 |---|---|
 | Capture note | Opens the capture window and writes `- text` |
 | Capture task | Opens the capture window and writes `- [ ] text` |
-| Open calendar | Shows the sidebar calendar if you closed it |
+| Open calendar | Shows the sidebar calendar |
 | Open journal file | Opens the journal file (creates it if missing) |
 
-Unidaily sets no default hotkeys. Assign your own under **Settings → Hotkeys** (search for "Unidaily").
+## Capturing entries
 
-### Capture window
+- **Enter** saves the entry and closes the window. **Esc** closes it without saving.
+- Empty text isn't saved; the window stays open.
+- The entry goes under today's heading, after the entries you already wrote today.
+- If today's heading doesn't exist yet, it's created at the top of the file (below the frontmatter, if the file has any), with a blank line before the previous day.
+- The note you're working in is never touched, and the journal file isn't opened.
+- A short notice confirms where the entry was saved. If saving fails, the notice stays on screen and includes your text so nothing is lost.
 
-- **Enter** saves, **Esc** cancels. While the `#` completion list is open, Enter picks the highlighted tag.
-- Empty input is not saved.
-- If today's heading doesn't exist yet, it is created at the top of the file (after the frontmatter, if any). Entries of the same day are kept in the order you wrote them.
-- If the journal file doesn't exist, it is created together with its folder.
+## Tags
 
-### Calendar
+The capture window shows two rows of tags under the text box:
 
-- Clicking a day with entries opens the journal at that day's heading, reusing the tab if the journal is already open.
+- **Recent**: tags you used most recently in the journal, newest first.
+- **Frequent**: the most used tags across your whole vault.
+
+Click a tag to add it to the end of your text; click it again to remove it. Tags already in your text are highlighted. If you have no tags yet, the window shows a hint instead.
+
+Type `#` to get suggestions from every tag in your vault. Keep typing to filter the list, then press Enter or click a suggestion to complete it. While the list is open, Enter picks a tag instead of saving, and Esc closes the list first.
+
+## Calendar
+
+The calendar sits in the right sidebar and shows one month at a time.
+
+- Use the arrows to move between months, and **This month** to jump back.
+- Today is highlighted. Days that have entries are marked with a dot.
+- Click a day with entries to open the journal at that day's heading. If the journal is already open in a tab, that tab is reused.
 - Clicking a day without entries only shows a notice. The file is never changed.
 - The first day of the week follows Obsidian's language setting.
 
+If you close the calendar, run **Open calendar** to bring it back.
+
 ## Settings
 
-| Setting | Default | Notes |
+| Setting | Default | Description |
 |---|---|---|
-| Journal file | `Daily Notes.md` | Path relative to the vault root |
-| Date heading level | `###` | 1–6 |
-| Date format | `YYYY-MM-DD dddd` | [Moment.js format](https://momentjs.com/docs/#/displaying/format/); a live preview is shown |
-| Recent tags | 6 | 0 hides the row |
-| Frequent tags | 6 | 0 hides the row |
-| Open calendar on startup | On | When off, the calendar stays closed until you run *Open calendar* |
+| Journal file | `Daily Notes.md` | Path of the journal, relative to the vault root |
+| Date heading level | `###` | Heading level used for each day (1–6) |
+| Date format | `YYYY-MM-DD dddd` | [Moment.js format](https://momentjs.com/docs/#/displaying/format/) for the date heading; a preview of today's heading is shown |
+| Recent tags | 6 | Number of recent tags shown; 0 hides the row |
+| Frequent tags | 6 | Number of frequent tags shown; 0 hides the row |
+| Open calendar on startup | On | Adds the calendar to the right sidebar when Obsidian starts and it isn't open |
 
-Weekday and month names follow Obsidian's interface language. Changing the heading level or date format does **not** rewrite existing headings; days whose headings no longer match the format won't be found by the calendar. Headings written with English weekday names are still found when the interface is in another language.
+Weekday and month names follow Obsidian's interface language. In Obsidian 1.13 and later, these settings can also be found through the settings search.
 
-## Coming from QuickAdd + Single File Daily Notes
+> **Changing the heading level or date format** doesn't rewrite headings that already exist. Days whose headings no longer match the new format won't be found by the calendar, and a new heading will be created for today.
 
-If you used QuickAdd's Capture together with Single File Daily Notes, your journal already has the format Unidaily uses (`### YYYY-MM-DD dddd` headings with list items). No conversion is needed:
+## Moving from QuickAdd + Single File Daily Notes
+
+If you used QuickAdd's Capture together with Single File Daily Notes, your journal already uses the format Unidaily expects (`### YYYY-MM-DD dddd` headings with list items). No conversion is needed:
 
 1. Install and enable Unidaily, and set **Journal file** to your existing file.
-2. Disable QuickAdd's capture choice and Single File Daily Notes if you no longer need them.
-3. Bind your old hotkeys to *Capture note* and *Capture task*.
+2. Disable QuickAdd's capture and Single File Daily Notes if you no longer need them.
+3. Assign the hotkeys you used before to **Capture note** and **Capture task**.
 
-## Installation
+## FAQ
 
-**From Obsidian:** Settings → Community plugins → Browse, search for "Unidaily", install and enable.
+**Can I edit or delete entries?**
+Yes. Open the journal file (**Open journal file**) and edit it like any other note. The capture window only adds new entries.
 
-**Manually:** download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/hztoyr/unidaily/releases/latest) and put them in `<your vault>/.obsidian/plugins/unidaily/`. Then reload Obsidian and enable Unidaily under Community plugins.
+**Does Unidaily go online or collect data?**
+No. It makes no network requests and collects nothing. It only reads and writes your journal file, and reads the tag index Obsidian already keeps for your vault.
 
-## Development
+**Why does the calendar show no dot on a day I wrote about?**
+The calendar looks for headings that match your current heading level and date format exactly. If you changed either setting, older headings won't match. Headings written with English weekday names are still found when Obsidian is set to another language.
 
-Requires Node.js 22.18 or later (the tests rely on Node's built-in TypeScript support).
+**Can I put the journal in a folder?**
+Yes. Set **Journal file** to something like `Journal/Daily Notes.md`. Missing folders are created automatically.
 
-```bash
-npm install
-npm run dev     # rebuild main.js on every change
-npm run build   # type-check and build for release
-npm test        # unit tests (node --test)
-npm run lint    # ESLint with the official Obsidian rules
-```
-
-To try a build, copy `main.js`, `manifest.json` and `styles.css` into a test vault's `.obsidian/plugins/unidaily/` and toggle the plugin off and on.
+**Does it work on mobile?**
+Yes, capturing and the calendar both work on Obsidian mobile.
 
 ## License
 
@@ -102,13 +140,126 @@ To try a build, copy `main.js`, `manifest.json` and `styles.css` into a test vau
 
 ## 中文说明
 
-Unidaily 把所有日记集中在**一个文件**里，每天一个日期标题，最新的一天在最上面。
+**[English](#unidaily)** · 中文
 
-- **记录窗口**：执行"记一笔"或"记待办"，输入一句话后回车，内容会写到日记文件中今天的标题下，不打开、不切换文件。
-- **标签**：窗口里显示日记中**最近**用过的标签和整个库中**最常用**的标签，点击添加，再点一次移除；输入 `#` 可以补全库中已有的标签。
-- **侧边栏日历**：有记录的日期下方显示小圆点，点击跳转到当天的标题；没有记录的日期只会提示，不会修改文件。
-- 支持桌面端和移动端，不联网，不收集任何数据。界面语言跟随 Obsidian，支持中文和英文。
+Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入一句话，回车，内容就会写到今天的日期下面，不用打开文件。最近用过的标签和常用标签点一下就能加上，侧边栏日历可以跳到任意一天。
 
-插件不设默认快捷键，请在"设置 → 快捷键"中搜索 "Unidaily" 自行绑定。
+### 为什么用一个文件
 
-**从 QuickAdd + Single File Daily Notes 迁移**：两者生成的日记文件格式与 Unidaily 一致，无需转换。启用 Unidaily 后，把"日记文件路径"设为原来的文件，停用原来的两个插件，再把原来的快捷键绑定到"记一笔"和"记待办"即可。
+常见的日记方式是每天新建一个文件。如果你一次只写一两句，也不是每天都写，最后就会攒下一大堆零碎的小文件。Unidaily 把所有内容放在一个 Markdown 文件里，每天一个日期标题，最新的一天在最上面：
+
+```markdown
+### 2026-10-15 Thursday
+- 和后端对齐接口字段 #工作
+- [ ] 给财务发报销单
+- 晚上跑了 5 公里 #跑步
+
+### 2026-10-12 Monday
+- 读完一本书，结尾一般 #读书
+```
+
+日记文件就是一篇普通笔记，可以照常编辑、搜索、链接。以后就算卸载插件，笔记也原样保留。
+
+### 安装
+
+**在 Obsidian 中安装**
+1. 打开 **设置 → 第三方插件**，如果开着"安全模式"，先把它关掉。
+2. 点 **浏览**，搜索 **Unidaily**，点 **安装**，再点 **启用**。
+
+**手动安装**
+1. 从 [最新版本](https://github.com/hztoyr/unidaily/releases/latest) 下载 `main.js`、`manifest.json`、`styles.css`。
+2. 放到 `<你的库>/.obsidian/plugins/unidaily/` 文件夹里。
+3. 重启 Obsidian，在 **设置 → 第三方插件** 中启用 **Unidaily**。
+
+需要 Obsidian 1.8.7 或更高版本，桌面端和移动端都能用。
+
+### 开始使用
+
+1. **选择日记文件**：默认是库根目录下的 `Daily Notes.md`，可以在 **设置 → Unidaily** 中修改。第一次写入时，文件和所在文件夹会自动创建。
+2. **绑定快捷键**：插件默认不设快捷键。打开 **设置 → 快捷键**，搜索 "Unidaily"，给 **记一笔** 和 **记待办** 分别绑定按键。
+3. **写第一条记录**：按快捷键，输入一句话，回车。
+
+所有命令也可以在命令面板（`Ctrl/Cmd + P`）中执行：
+
+| 命令 | 作用 |
+|---|---|
+| 记一笔 | 打开记录窗口，写入 `- 内容` |
+| 记待办 | 打开记录窗口，写入 `- [ ] 内容` |
+| 打开日历 | 显示侧边栏日历 |
+| 打开日记文件 | 打开日记文件（不存在时自动创建） |
+
+### 记录
+
+- **回车** 保存并关闭窗口，**Esc** 不保存直接关闭。
+- 内容为空时不会保存，窗口保持打开。
+- 记录会写到今天的日期标题下面，排在今天已有记录的后面。
+- 如果今天的标题还不存在，会在文件最上面新建（文件有 frontmatter 时放在它下面），并和前一天之间空一行。
+- 不会改动你正在编辑的笔记，也不会打开日记文件。
+- 保存后会短暂提示记到了哪个文件。如果保存失败，提示会一直显示，并附上你输入的内容，不会丢失。
+
+### 标签
+
+记录窗口的输入框下方有两行标签：
+
+- **最近**：日记里最近用过的标签，越新的越靠前。
+- **常用**：整个库里使用次数最多的标签。
+
+点一下标签，就把它加到内容末尾；再点一下就移除。已经在内容里的标签会高亮显示。如果还没有任何标签，会显示一行提示。
+
+输入 `#` 会弹出库中所有标签的候选列表，继续输入可以筛选，回车或点击即可补全。候选列表打开时，回车用来选择标签而不是保存，Esc 会先关闭列表。
+
+### 日历
+
+日历在右侧边栏，一次显示一个月。
+
+- 用左右箭头切换月份，点 **回到本月** 回到当前月份。
+- 今天会高亮显示，有记录的日期下方有一个小圆点。
+- 点击有记录的日期，会打开日记文件并跳到当天的标题；如果日记文件已经在某个标签页打开，会直接切换过去。
+- 点击没有记录的日期，只会弹出提示，不会修改文件。
+- 每周从星期几开始，跟随 Obsidian 的语言设置。
+
+如果关掉了日历，执行 **打开日历** 命令就能重新打开。
+
+### 设置
+
+| 设置项 | 默认值 | 说明 |
+|---|---|---|
+| 日记文件路径 | `Daily Notes.md` | 日记文件的位置，相对于库根目录 |
+| 日期标题级别 | `###` | 每天的日期标题使用的标题级别（1–6） |
+| 日期格式 | `YYYY-MM-DD dddd` | 日期标题的 [Moment.js 格式](https://momentjs.com/docs/#/displaying/format/)，设置页会显示今天标题的预览 |
+| 最近标签显示数量 | 6 | 显示多少个最近标签，0 表示不显示这一行 |
+| 常用标签显示数量 | 6 | 显示多少个常用标签，0 表示不显示这一行 |
+| 启动时自动打开日历 | 开 | Obsidian 启动时，如果日历没有打开，就把它放到右侧边栏 |
+
+星期和月份的名称跟随 Obsidian 的界面语言。在 Obsidian 1.13 及以上版本中，这些设置项也能在设置窗口的搜索框里搜到。
+
+> **修改日期标题级别或日期格式后**，已有的标题不会自动转换。和新格式对不上的日期，日历会找不到，今天也会新建一个标题。
+
+### 从 QuickAdd + Single File Daily Notes 迁移
+
+如果你之前用 QuickAdd 的 Capture 配合 Single File Daily Notes，你的日记文件已经是 Unidaily 使用的格式（`### YYYY-MM-DD dddd` 标题加列表），不需要任何转换：
+
+1. 安装并启用 Unidaily，把 **日记文件路径** 设为原来的文件。
+2. 如果不再需要，停用 QuickAdd 的 Capture 和 Single File Daily Notes。
+3. 把原来用的快捷键绑定到 **记一笔** 和 **记待办**。
+
+### 常见问题
+
+**可以修改或删除已有的记录吗？**
+可以。执行 **打开日记文件**，像编辑普通笔记一样修改即可。记录窗口只负责添加新记录。
+
+**插件会联网或收集数据吗？**
+不会。插件不发起任何网络请求，也不收集任何数据。它只读写你的日记文件，并读取 Obsidian 本身就维护的库内标签索引。
+
+**为什么我写过记录的日子，日历上没有小圆点？**
+日历只认和当前"日期标题级别"、"日期格式"完全一致的标题。如果你改过这两项设置，旧标题就对不上了。另外，用英文星期名写的标题，在 Obsidian 切换成其他语言后仍然能找到。
+
+**日记文件可以放在文件夹里吗？**
+可以。把 **日记文件路径** 设为类似 `日记/Daily Notes.md` 的路径即可，不存在的文件夹会自动创建。
+
+**手机上能用吗？**
+能。记录和日历在 Obsidian 移动端上都可以正常使用。
+
+### 许可证
+
+[MIT](LICENSE)
