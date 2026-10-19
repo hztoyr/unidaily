@@ -24,15 +24,17 @@ export default class UnidailyPlugin extends Plugin {
 		await this.loadSettings();
 		const { t } = this;
 
-		// No default hotkeys: users bind them under Settings → Hotkeys (FR-1).
+		// Default hotkeys Alt+J / Alt+T (FR-1); users can change them under Settings → Hotkeys.
 		this.addCommand({
 			id: "capture-note",
 			name: t("command.captureNote"),
+			hotkeys: [{ modifiers: ["Alt"], key: "J" }],
 			callback: () => void this.openCapture("note"),
 		});
 		this.addCommand({
 			id: "capture-task",
 			name: t("command.captureTask"),
+			hotkeys: [{ modifiers: ["Alt"], key: "T" }],
 			callback: () => void this.openCapture("task"),
 		});
 		this.addCommand({

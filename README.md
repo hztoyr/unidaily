@@ -48,17 +48,17 @@ Requires Obsidian 1.8.7 or later. Works on desktop and mobile.
 ## Getting started
 
 1. **Pick your journal file.** By default it's `Daily Notes.md` in the vault root. You can change it under **Settings → Unidaily**. The file and its folder are created the first time you write an entry.
-2. **Assign hotkeys.** Unidaily sets no hotkeys by default. Open **Settings → Hotkeys**, search for "Unidaily", and assign keys to **Capture note** and **Capture task**.
-3. **Write your first entry.** Press your hotkey, type a line and press Enter.
+2. **Hotkeys.** **Alt+J** opens *Capture note* and **Alt+T** opens *Capture task*. If they clash with keys you already use, change them under **Settings → Hotkeys** (search for "Unidaily").
+3. **Write your first entry.** Press Alt+J, type a line and press Enter.
 
 You can also run every command from the command palette (`Ctrl/Cmd + P`):
 
-| Command | What it does |
-|---|---|
-| Capture note | Opens the capture window and writes `- text` |
-| Capture task | Opens the capture window and writes `- [ ] text` |
-| Open calendar | Shows the sidebar calendar |
-| Open journal file | Opens the journal file (creates it if missing) |
+| Command | Default hotkey | What it does |
+|---|---|---|
+| Capture note | Alt+J | Opens the capture window and writes `- text` |
+| Capture task | Alt+T | Opens the capture window and writes `- [ ] text` |
+| Open calendar | — | Shows the sidebar calendar |
+| Open journal file | — | Opens the journal file (creates it if missing) |
 
 ## Capturing entries
 
@@ -113,7 +113,7 @@ If you used QuickAdd's Capture together with Single File Daily Notes, your journ
 
 1. Install and enable Unidaily, and set **Journal file** to your existing file.
 2. Disable QuickAdd's capture and Single File Daily Notes if you no longer need them.
-3. Assign the hotkeys you used before to **Capture note** and **Capture task**.
+3. Remove the old QuickAdd hotkeys under **Settings → Hotkeys** if they still use Alt+J / Alt+T, or give *Capture note* and *Capture task* the keys you used before.
 
 ## FAQ
 
@@ -176,17 +176,17 @@ Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入�
 ### 开始使用
 
 1. **选择日记文件**：默认是库根目录下的 `Daily Notes.md`，可以在 **设置 → Unidaily** 中修改。第一次写入时，文件和所在文件夹会自动创建。
-2. **绑定快捷键**：插件默认不设快捷键。打开 **设置 → 快捷键**，搜索 "Unidaily"，给 **记一笔** 和 **记待办** 分别绑定按键。
-3. **写第一条记录**：按快捷键，输入一句话，回车。
+2. **快捷键**：**Alt+J** 打开"记一笔"，**Alt+T** 打开"记待办"。如果和你已有的快捷键冲突，可以在 **设置 → 快捷键** 中搜索 "Unidaily" 修改。
+3. **写第一条记录**：按 Alt+J，输入一句话，回车。
 
 所有命令也可以在命令面板（`Ctrl/Cmd + P`）中执行：
 
-| 命令 | 作用 |
-|---|---|
-| 记一笔 | 打开记录窗口，写入 `- 内容` |
-| 记待办 | 打开记录窗口，写入 `- [ ] 内容` |
-| 打开日历 | 显示侧边栏日历 |
-| 打开日记文件 | 打开日记文件（不存在时自动创建） |
+| 命令 | 默认快捷键 | 作用 |
+|---|---|---|
+| 记一笔 | Alt+J | 打开记录窗口，写入 `- 内容` |
+| 记待办 | Alt+T | 打开记录窗口，写入 `- [ ] 内容` |
+| 打开日历 | — | 显示侧边栏日历 |
+| 打开日记文件 | — | 打开日记文件（不存在时自动创建） |
 
 ### 记录
 
@@ -241,7 +241,7 @@ Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入�
 
 1. 安装并启用 Unidaily，把 **日记文件路径** 设为原来的文件。
 2. 如果不再需要，停用 QuickAdd 的 Capture 和 Single File Daily Notes。
-3. 把原来用的快捷键绑定到 **记一笔** 和 **记待办**。
+3. 如果 QuickAdd 的旧快捷键还占着 Alt+J / Alt+T，在 **设置 → 快捷键** 中删掉；或者把你原来用的按键改绑到 **记一笔** 和 **记待办**。
 
 ### 常见问题
 
