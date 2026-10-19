@@ -86,15 +86,19 @@ export function hasTag(text: string, tag: string): boolean {
 }
 
 /**
- * Click on a tag chip (FR-5): appends the tag when absent (separated by one
- * space), otherwise removes every occurrence and tidies the spacing.
+ * Click on a tag chip (FR-5): appends the tag when absent, otherwise removes
+ * every occurrence and tidies the spacing. The result ends with one space
+ * (unless it is empty) so the user can keep typing right away; saving trims it.
  */
 export function toggleTag(text: string, tag: string): string {
+	let next: string;
 	if (hasTag(text, tag)) {
-		return text.replace(wholeTagRe(tag, "g"), "").replace(/[ \t]{2,}/g, " ").trim();
+		next = text.replace(wholeTagRe(tag, "g"), "").replace(/[ \t]{2,}/g, " ").trim();
+	} else {
+		const base = text.trim();
+		next = base === "" ? tag : `${base} ${tag}`;
 	}
-	const base = text.trimEnd();
-	return base === "" ? tag : `${base} ${tag}`;
+	return next === "" ? "" : `${next} `;
 }
 
 /** A partial `#tag` around the caret that the completion list should complete (FR-6). */

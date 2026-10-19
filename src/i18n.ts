@@ -15,6 +15,8 @@ const en = {
 	// Capture modal
 	"modal.title": "{command} → {file}",
 	"modal.placeholder": "Write something…",
+	"modal.note": "Note",
+	"modal.task": "Task",
 	"modal.recent": "Recent",
 	"modal.frequent": "Frequent",
 	"modal.tagHint": "Type #tag in the text to add a tag",
@@ -66,6 +68,8 @@ const zh: Record<StringKey, string> = {
 
 	"modal.title": "{command} → {file}",
 	"modal.placeholder": "输入内容…",
+	"modal.note": "记一笔",
+	"modal.task": "记待办",
 	"modal.recent": "最近",
 	"modal.frequent": "常用",
 	"modal.tagHint": "在内容中输入 #标签 即可添加标签",

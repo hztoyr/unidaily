@@ -90,12 +90,12 @@ export default class UnidailyPlugin extends Plugin {
 
 		new CaptureModal(this.app, {
 			t,
-			commandName: t(kind === "task" ? "command.captureTask" : "command.captureNote"),
+			kind,
 			fileName: fileNameOf(settings.journalPath),
 			recentTags: recentTags(content, settings.recentTagCount),
 			frequentTags: allTags.slice(0, settings.frequentTagCount),
 			allTags,
-			onSubmit: (text) => void this.write(kind, text),
+			onSubmit: (text, chosen) => void this.write(chosen, text),
 		}).open();
 	}
 

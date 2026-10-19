@@ -62,6 +62,7 @@ You can also run every command from the command palette (`Ctrl/Cmd + P`):
 
 ## Capturing entries
 
+- The switch at the top shows whether the entry will be a **Note** or a **Task**. Click the other side, or press Alt+J / Alt+T while the window is open, to change it; what you've typed is kept.
 - **Enter** saves the entry and closes the window. **Esc** closes it without saving.
 - Empty text isn't saved; the window stays open.
 - The entry goes under today's heading, after the entries you already wrote today.
@@ -76,7 +77,7 @@ The capture window shows two rows of tags under the text box:
 - **Recent**: tags you used most recently in the journal, newest first.
 - **Frequent**: the most used tags across your whole vault.
 
-Click a tag to add it to the end of your text; click it again to remove it. Tags already in your text are highlighted. If you have no tags yet, the window shows a hint instead.
+Click a tag to add it to the end of your text, followed by a space so you can keep typing; click it again to remove it. Tags already in your text are highlighted. If you have no tags yet, the window shows a hint instead.
 
 Type `#` to get suggestions from every tag in your vault. Keep typing to filter the list, then press Enter or click a suggestion to complete it. While the list is open, Enter picks a tag instead of saving, and Esc closes the list first.
 
@@ -190,6 +191,7 @@ Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入�
 
 ### 记录
 
+- 窗口顶部的切换按钮显示这条记录是 **记一笔** 还是 **记待办**。点另一边，或者在窗口打开时按 Alt+J / Alt+T，就能切换，已经输入的内容不会丢失。
 - **回车** 保存并关闭窗口，**Esc** 不保存直接关闭。
 - 内容为空时不会保存，窗口保持打开。
 - 记录会写到今天的日期标题下面，排在今天已有记录的后面。
@@ -204,7 +206,7 @@ Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入�
 - **最近**：日记里最近用过的标签，越新的越靠前。
 - **常用**：整个库里使用次数最多的标签。
 
-点一下标签，就把它加到内容末尾；再点一下就移除。已经在内容里的标签会高亮显示。如果还没有任何标签，会显示一行提示。
+点一下标签，就把它加到内容末尾，后面自动跟一个空格，可以直接接着输入；再点一下就移除。已经在内容里的标签会高亮显示。如果还没有任何标签，会显示一行提示。
 
 输入 `#` 会弹出库中所有标签的候选列表，继续输入可以筛选，回车或点击即可补全。候选列表打开时，回车用来选择标签而不是保存，Esc 会先关闭列表。
 

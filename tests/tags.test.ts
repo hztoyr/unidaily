@@ -120,25 +120,38 @@ describe("hasTag / toggleTag (FR-5)", () => {
 		assert.equal(hasTag("开会 #工作，下午", "#工作"), true);
 	});
 
-	test("appends with one space", () => {
-		assert.equal(toggleTag("开会", "#工作"), "开会 #工作");
-		assert.equal(toggleTag("开会   ", "#工作"), "开会 #工作");
-		assert.equal(toggleTag("", "#工作"), "#工作");
+	test("appends with one space before and one after, ready to keep typing", () => {
+		assert.equal(toggleTag("开会", "#工作"), "开会 #工作 ");
+		assert.equal(toggleTag("开会   ", "#工作"), "开会 #工作 ");
+		assert.equal(toggleTag("", "#工作"), "#工作 ");
 	});
 
-	test("removes and tidies spacing", () => {
-		assert.equal(toggleTag("开会 #工作", "#工作"), "开会");
-		assert.equal(toggleTag("#工作 开会", "#工作"), "开会");
-		assert.equal(toggleTag("早上 #工作 开会 #读书", "#工作"), "早上 开会 #读书");
-		assert.equal(toggleTag("#工作 a #工作", "#工作"), "a");
+	test("several clicks in a row keep single spaces", () => {
+		let text = "";
+		text = toggleTag(text, "#a");
+		text = toggleTag(text, "#b");
+		text = toggleTag(text, "#c");
+		assert.equal(text, "#a #b #c ");
+	});
+
+	test("removes and tidies spacing, leaving one trailing space", () => {
+		assert.equal(toggleTag("开会 #工作", "#工作"), "开会 ");
+		assert.equal(toggleTag("#工作 开会", "#工作"), "开会 ");
+		assert.equal(toggleTag("早上 #工作 开会 #读书", "#工作"), "早上 开会 #读书 ");
+		assert.equal(toggleTag("#工作 a #工作", "#工作"), "a ");
+		assert.equal(toggleTag("开会 #工作 ", "#工作"), "开会 ");
+	});
+
+	test("removing the only tag leaves an empty box", () => {
+		assert.equal(toggleTag("#工作 ", "#工作"), "");
 	});
 
 	test("does not touch longer tags when removing", () => {
-		assert.equal(toggleTag("#工作 #工作/会议", "#工作"), "#工作/会议");
+		assert.equal(toggleTag("#工作 #工作/会议", "#工作"), "#工作/会议 ");
 	});
 
-	test("toggling twice restores the text", () => {
-		assert.equal(toggleTag(toggleTag("开会", "#a.b+c"), "#a.b+c"), "开会");
+	test("toggling twice restores the text (plus the trailing space)", () => {
+		assert.equal(toggleTag(toggleTag("开会", "#a.b+c"), "#a.b+c"), "开会 ");
 	});
 });
 

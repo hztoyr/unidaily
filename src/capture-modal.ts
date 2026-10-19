@@ -1,42 +1,63 @@
 import { AbstractInputSuggest, App, Modal } from "obsidian";
 import type { Translator } from "./i18n.ts";
+import type { EntryKind } from "./journal.ts";
 import { applyTag, filterTags, hasTag, tagQueryAt, toggleTag, type TagQuery } from "./tags.ts";
 
 export interface CaptureOptions {
 	t: Translator;
-	/** Command name shown in the title, e.g. "Capture note". */
-	commandName: string;
+	/** Mode the window opens in; the user can switch it before saving. */
+	kind: EntryKind;
 	/** Journal file name shown in the title. */
 	fileName: string;
 	recentTags: readonly string[];
 	frequentTags: readonly string[];
 	/** All vault tags, most used first, offered by `#` completion. */
 	allTags: readonly string[];
-	/** Receives the trimmed text after the modal has closed. */
-	onSubmit: (text: string) => void;
+	/** Receives the trimmed text and the chosen mode after the modal has closed. */
+	onSubmit: (text: string, kind: EntryKind) => void;
 }
 
 /**
- * Capture window (FR-1 – FR-8): a single-line input, rows of recent and
- * frequent tag chips, and `#` completion. It only collects text; writing to
- * the journal is up to `onSubmit`.
+ * Capture window (FR-1 – FR-8): a note/task switch, a single-line input, rows
+ * of recent and frequent tag chips, and `#` completion. It only collects
+ * text; writing to the journal is up to `onSubmit`.
  */
 export class CaptureModal extends Modal {
 	private readonly options: CaptureOptions;
+	private kind: EntryKind;
 	private inputEl: HTMLInputElement | null = null;
 	private suggest: TagSuggest | null = null;
 	private chips: { tag: string; el: HTMLElement }[] = [];
+	private kindButtons: { kind: EntryKind; el: HTMLElement }[] = [];
 
 	constructor(app: App, options: CaptureOptions) {
 		super(app);
 		this.options = options;
+		this.kind = options.kind;
 	}
 
 	onOpen(): void {
-		const { t, commandName, fileName, recentTags, frequentTags, allTags } = this.options;
+		const { t, recentTags, frequentTags, allTags } = this.options;
 		const { contentEl } = this;
 		this.modalEl.addClass("unidaily-capture-modal");
-		this.titleEl.setText(t("modal.title", { command: commandName, file: fileName }));
+
+		// Note / task switch (FR-2). Alt+J and Alt+T switch it while the window is open.
+		const kinds = contentEl.createDiv({ cls: "unidaily-kind-switch", attr: { role: "group" } });
+		for (const kind of ["note", "task"] as const) {
+			const el = kinds.createEl("button", { text: t(kind === "task" ? "modal.task" : "modal.note") });
+			el.addEventListener("mousedown", (evt) => evt.preventDefault());
+			el.addEventListener("click", () => this.setKind(kind));
+			this.kindButtons.push({ kind, el });
+		}
+		this.scope.register(["Alt"], "J", () => {
+			this.setKind("note");
+			return false;
+		});
+		this.scope.register(["Alt"], "T", () => {
+			this.setKind("task");
+			return false;
+		});
+		this.setKind(this.kind);
 
 		const input = contentEl.createEl("input", {
 			type: "text",
@@ -75,6 +96,20 @@ export class CaptureModal extends Modal {
 		this.suggest?.close();
 		this.contentEl.empty();
 		this.chips = [];
+		this.kindButtons = [];
+	}
+
+	/** Switches between note and task; the title and the switch follow. */
+	private setKind(kind: EntryKind): void {
+		const { t, fileName } = this.options;
+		this.kind = kind;
+		const command = t(kind === "task" ? "command.captureTask" : "command.captureNote");
+		this.titleEl.setText(t("modal.title", { command, file: fileName }));
+		for (const { kind: k, el } of this.kindButtons) {
+			el.toggleClass("is-active", k === kind);
+			el.setAttr("aria-pressed", String(k === kind));
+		}
+		this.inputEl?.focus();
 	}
 
 	private submit(): void {
@@ -86,7 +121,7 @@ export class CaptureModal extends Modal {
 			return;
 		}
 		this.close();
-		this.options.onSubmit(text);
+		this.options.onSubmit(text, this.kind);
 	}
 
 	private addTagRow(parent: HTMLElement, label: string, tags: readonly string[]): void {
