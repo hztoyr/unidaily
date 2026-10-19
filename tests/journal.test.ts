@@ -6,8 +6,11 @@ import {
 	indexHeadings,
 	formatEntry,
 	frontmatterEnd,
+	insertDayHeading,
 	insertEntry,
 	listHeadings,
+	sectionEnd,
+	type DateCompare,
 } from "../src/journal.ts";
 
 const TODAY = "### 2026-10-15 Thursday";
@@ -206,5 +209,128 @@ describe("indexHeadings (calendar dots)", () => {
 
 	test("empty journal", () => {
 		assert.equal(indexHeadings("", 3).size, 0);
+	});
+});
+
+/** Test comparator: reads the YYYY-MM-DD at the start of a heading. */
+const byDate =
+	(target: string): DateCompare =>
+	(text) => {
+		const m = /^(\d{4}-\d{2}-\d{2})/.exec(text);
+		return m ? Math.sign((m[1] ?? "").localeCompare(target)) : null;
+	};
+
+describe("insertDayHeading (calendar: create a day, FR-16)", () => {
+	const D15 = "### 2026-10-15 Thursday";
+	const D12 = "### 2026-10-12 Monday";
+	const D10 = "### 2026-10-10 Saturday";
+	const D20 = "### 2026-10-20 Tuesday";
+
+	test("empty file", () => {
+		assert.deepEqual(insertDayHeading("", D12, 3, byDate("2026-10-12")), { content: md(D12, ""), line: 1 });
+	});
+
+	test("newest day goes on top", () => {
+		const before = md(D15, "- a");
+		assert.deepEqual(insertDayHeading(before, D20, 3, byDate("2026-10-20")), {
+			content: md(D20, "", "", D15, "- a"),
+			line: 1,
+		});
+	});
+
+	test("a past day goes between its neighbours", () => {
+		const before = md(D15, "- a", "", D10, "- b");
+		assert.deepEqual(insertDayHeading(before, D12, 3, byDate("2026-10-12")), {
+			content: md(D15, "- a", "", D12, "", "", D10, "- b"),
+			line: 4,
+		});
+	});
+
+	test("adds a blank line when the newer day has none before the next heading", () => {
+		const before = md(D15, "- a", D10, "- b");
+		assert.deepEqual(insertDayHeading(before, D12, 3, byDate("2026-10-12")), {
+			content: md(D15, "- a", "", D12, "", "", D10, "- b"),
+			line: 4,
+		});
+	});
+
+	test("the oldest day goes at the end", () => {
+		const before = md(D15, "- a", "", "");
+		assert.deepEqual(insertDayHeading(before, D10, 3, byDate("2026-10-10")), {
+			content: md(D15, "- a", "", D10, ""),
+			line: 4,
+		});
+	});
+
+	test("after frontmatter", () => {
+		const before = md("---", "a: 1", "---", D10, "- b");
+		assert.deepEqual(insertDayHeading(before, D12, 3, byDate("2026-10-12")), {
+			content: md("---", "a: 1", "---", D12, "", "", D10, "- b"),
+			line: 4,
+		});
+	});
+
+	test("headings that are not dates are ignored", () => {
+		const before = md("### Ideas", "- x", "", D10, "- b");
+		assert.deepEqual(insertDayHeading(before, D12, 3, byDate("2026-10-12")), {
+			content: md("### Ideas", "- x", "", D12, "", "", D10, "- b"),
+			line: 4,
+		});
+	});
+
+	test("dated headings at another level are ignored", () => {
+		const before = md(D15, "#### 2026-10-11 Sunday", "- x");
+		assert.deepEqual(insertDayHeading(before, D12, 3, byDate("2026-10-12")), {
+			content: md(D15, "#### 2026-10-11 Sunday", "- x", "", D12, ""),
+			line: 5,
+		});
+	});
+
+	test("an existing heading is left alone", () => {
+		const before = md(D15, "- a", "", D12, "- c");
+		assert.deepEqual(insertDayHeading(before, D12, 3, byDate("2026-10-12")), { content: before, line: 4 });
+	});
+
+	test("CRLF is preserved", () => {
+		const before = [D15, "- a", "", D10, ""].join("\r\n");
+		const result = insertDayHeading(before, D12, 3, byDate("2026-10-12"));
+		assert.equal(result.content, [D15, "- a", "", D12, "", "", D10, ""].join("\r\n"));
+	});
+});
+
+describe("insertEntry with date order (capture when today is missing)", () => {
+	const FUTURE = "### 2026-10-20 Tuesday";
+	const OLD = "### 2026-10-12 Monday";
+
+	test("today goes below a day created ahead of time", () => {
+		const before = md(FUTURE, "- plan", "", OLD, "- b");
+		const after = md(FUTURE, "- plan", "", TODAY, "- a", "", OLD, "- b");
+		assert.equal(insertEntry(before, TODAY, 3, "- a", byDate("2026-10-15")), after);
+	});
+
+	test("today on top when it is the newest", () => {
+		const before = md(OLD, "- b");
+		assert.equal(insertEntry(before, TODAY, 3, "- a", byDate("2026-10-15")), md(TODAY, "- a", "", OLD, "- b"));
+	});
+
+	test("today at the end when only future days exist", () => {
+		const before = md(FUTURE, "- plan");
+		assert.equal(insertEntry(before, TODAY, 3, "- a", byDate("2026-10-15")), md(FUTURE, "- plan", "", TODAY, "- a"));
+	});
+});
+
+describe("sectionEnd (calendar: cursor at the end of a day)", () => {
+	const content = md(TODAY, "- a", "- [ ] b", "", "", "### 2026-10-12 Monday", "", "### 2026-10-10 Saturday", "- c", "#### Notes", "- d");
+
+	test("end of the last entry, skipping blank lines", () => {
+		assert.deepEqual(sectionEnd(content, 0, 3), { line: 2, ch: "- [ ] b".length });
+	});
+
+	test("an empty day ends on its heading", () => {
+		assert.deepEqual(sectionEnd(content, 5, 3), { line: 5, ch: "### 2026-10-12 Monday".length });
+	});
+
+	test("sub-headings belong to the day; last day runs to the end of the file", () => {
+		assert.deepEqual(sectionEnd(content, 7, 3), { line: 10, ch: 3 });
 	});
 });

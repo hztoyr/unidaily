@@ -24,12 +24,15 @@ const en = {
 	// Notices
 	"notice.saved": "Saved to {file}",
 	"notice.saveFailed": "Could not save to {file}: {error}\nYour text: {text}",
-	"notice.noEntry": "No entries on this day",
 	"notice.pathIsFolder": "{path} is a folder, not a file. Change the journal file path in settings.",
 
 	// Calendar
 	"calendar.title": "Unidaily calendar",
 	"calendar.monthFormat": "MMMM YYYY",
+	"calendar.dateDisplay": "dddd, LL",
+	"calendar.createTitle": "Create entry",
+	"calendar.createMessage": "There is no entry for {date} yet. Create it?",
+	"calendar.create": "Create",
 	"calendar.prevMonth": "Previous month",
 	"calendar.thisMonth": "This month",
 	"calendar.nextMonth": "Next month",
@@ -71,11 +74,14 @@ const zh: Record<StringKey, string> = {
 
 	"notice.saved": "已记录到 {file}",
 	"notice.saveFailed": "写入 {file} 失败：{error}\n你输入的内容：{text}",
-	"notice.noEntry": "这一天没有记录",
 	"notice.pathIsFolder": "{path} 是文件夹而不是文件，请在设置中修改日记文件路径。",
 
 	"calendar.title": "Unidaily 日历",
 	"calendar.monthFormat": "YYYY年M月",
+	"calendar.dateDisplay": "LL dddd",
+	"calendar.createTitle": "新建日记",
+	"calendar.createMessage": "{date} 还没有日记，要新建吗？",
+	"calendar.create": "新建",
 	"calendar.prevMonth": "上个月",
 	"calendar.thisMonth": "回到本月",
 	"calendar.nextMonth": "下个月",

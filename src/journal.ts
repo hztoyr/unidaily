@@ -8,6 +8,19 @@
 
 export type EntryKind = "note" | "task";
 
+/**
+ * Compares a heading's text with the target day: a positive number when the
+ * heading's day is newer, negative when older, 0 for the same day, and null
+ * when the text is not a date in the configured format.
+ */
+export type DateCompare = (headingText: string) => number | null;
+
+/** A position in the file: 0-based line and character. */
+export interface Position {
+	line: number;
+	ch: number;
+}
+
 export interface HeadingInfo {
 	/** 0-based line number in the file. */
 	line: number;
@@ -69,36 +82,110 @@ export function findHeadingLine(content: string, heading: string): number {
 }
 
 /**
+ * Where the content of the day under `headingLine` ends: the end of its last
+ * non-blank line, or the end of the heading itself when the day is empty.
+ * The calendar puts the cursor here so the user can keep writing.
+ */
+export function sectionEnd(content: string, headingLine: number, level: number): Position {
+	const { lines } = splitLines(content);
+	const next = scanHeadings(lines).find((h) => h.line > headingLine && h.level <= level);
+	let last = (next ? next.line : lines.length) - 1;
+	while (last > headingLine && lines[last]?.trim() === "") last--;
+	return { line: last, ch: (lines[last] ?? "").length };
+}
+
+/**
  * Inserts `entry` under the heading line `heading` (level `level`).
  *
  * - Heading exists: the entry goes at the end of that day's section, before the
  *   next heading of the same or higher level, skipping trailing blank lines.
- * - Heading missing: a new section is created at the top of the body (after
- *   frontmatter), separated from the existing content by one blank line.
+ * - Heading missing: a new section is created, separated from its neighbours
+ *   by one blank line. With `compare` it goes in date order (newest first);
+ *   without it, at the top of the body (after frontmatter).
  *
  * Line endings (LF / CRLF) and the presence of a final newline are preserved.
  */
-export function insertEntry(content: string, heading: string, level: number, entry: string): string {
+export function insertEntry(
+	content: string,
+	heading: string,
+	level: number,
+	entry: string,
+	compare?: DateCompare,
+): string {
 	const { lines, eol, trailingNewline } = splitLines(content);
 	const headings = scanHeadings(lines);
 	const target = heading.trimEnd();
-	const today = headings.find((h) => lines[h.line]?.trimEnd() === target);
+	const day = headings.find((h) => lines[h.line]?.trimEnd() === target);
 
-	if (today) {
-		const next = headings.find((h) => h.line > today.line && h.level <= level);
+	if (day) {
+		const next = headings.find((h) => h.line > day.line && h.level <= level);
 		let insertAt = next ? next.line : lines.length;
-		while (insertAt - 1 > today.line && lines[insertAt - 1]?.trim() === "") insertAt--;
+		while (insertAt - 1 > day.line && lines[insertAt - 1]?.trim() === "") insertAt--;
 		lines.splice(insertAt, 0, entry);
 	} else {
-		const bodyStart = frontmatterEnd(lines);
-		let restStart = bodyStart;
-		while (restStart < lines.length && lines[restStart]?.trim() === "") restStart++;
-		const rest = lines.slice(restStart);
-		const section = rest.length > 0 ? [target, entry, ""] : [target, entry];
-		lines.splice(bodyStart, lines.length - bodyStart, ...section, ...rest);
+		const writeLine = addDaySection(lines, target, level, compare);
+		lines[writeLine] = entry;
 	}
 
 	return lines.join(eol) + (trailingNewline ? eol : "");
+}
+
+/**
+ * Adds an empty section for a day that has no heading yet, in date order
+ * (newest first), and returns the new content plus the line right under the
+ * new heading, where the user can start writing. If the heading already
+ * exists, the content is returned unchanged.
+ */
+export function insertDayHeading(
+	content: string,
+	heading: string,
+	level: number,
+	compare: DateCompare,
+): { content: string; line: number } {
+	const { lines, eol, trailingNewline } = splitLines(content);
+	const target = heading.trimEnd();
+	const existing = scanHeadings(lines).find((h) => lines[h.line]?.trimEnd() === target);
+	if (existing) return { content, line: existing.line + 1 };
+	const line = addDaySection(lines, target, level, compare);
+	return { content: lines.join(eol) + (trailingNewline ? eol : ""), line };
+}
+
+/**
+ * Splices `[heading, ""]` (plus blank separators) into `lines` and returns
+ * the index of the empty line under the heading.
+ *
+ * - No dated headings (or no `compare`): at the top of the body.
+ * - Otherwise before the first dated heading that is older than the target,
+ *   or at the end of the file when every dated heading is newer.
+ */
+function addDaySection(lines: string[], heading: string, level: number, compare?: DateCompare): number {
+	const bodyStart = frontmatterEnd(lines);
+	const dated = compare
+		? scanHeadings(lines).filter((h) => h.level === level && compare(h.text) !== null)
+		: [];
+
+	if (dated.length === 0) {
+		let restStart = bodyStart;
+		while (restStart < lines.length && lines[restStart]?.trim() === "") restStart++;
+		const rest = lines.slice(restStart);
+		const section = rest.length > 0 ? [heading, "", ""] : [heading, ""];
+		lines.splice(bodyStart, lines.length - bodyStart, ...section, ...rest);
+		return bodyStart + 1;
+	}
+
+	const older = dated.find((h) => (compare?.(h.text) ?? 0) < 0);
+	if (older) {
+		const at = older.line;
+		const needsGap = at > bodyStart && lines[at - 1]?.trim() !== "";
+		const section = needsGap ? ["", heading, "", ""] : [heading, "", ""];
+		lines.splice(at, 0, ...section);
+		return at + section.indexOf(heading) + 1;
+	}
+
+	while (lines.length > bodyStart && lines[lines.length - 1]?.trim() === "") lines.pop();
+	if (lines.length > bodyStart) lines.push("");
+	lines.push(heading, "");
+	return lines.length - 1;
 }
 
 interface SplitResult {

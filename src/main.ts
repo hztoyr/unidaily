@@ -3,7 +3,14 @@ import { CalendarView, VIEW_TYPE_CALENDAR } from "./calendar-view.ts";
 import { CaptureModal } from "./capture-modal.ts";
 import { createTranslator, type Translator } from "./i18n.ts";
 import { buildHeading, formatEntry, type EntryKind } from "./journal.ts";
-import { JournalPathError, appendEntry, fileNameOf, openJournal, readJournal } from "./journal-file.ts";
+import {
+	JournalPathError,
+	appendEntry,
+	dateComparator,
+	fileNameOf,
+	openJournal,
+	readJournal,
+} from "./journal-file.ts";
 import { normalizeSettings, type UnidailySettings } from "./settings.ts";
 import { UnidailySettingTab } from "./settings-tab.ts";
 import { countTags, frequentTags, recentTags } from "./tags.ts";
@@ -103,9 +110,12 @@ export default class UnidailyPlugin extends Plugin {
 	private async write(kind: EntryKind, text: string): Promise<void> {
 		const { settings, t } = this;
 		const file = fileNameOf(settings.journalPath);
-		const heading = buildHeading(settings.headingLevel, moment().format(settings.dateFormat));
+		const now = moment();
+		const heading = buildHeading(settings.headingLevel, now.format(settings.dateFormat));
+		// A missing heading for today goes in date order, below any days created ahead of time.
+		const compare = dateComparator(settings.dateFormat, now);
 		try {
-			await appendEntry(this.app, settings.journalPath, heading, settings.headingLevel, formatEntry(text, kind));
+			await appendEntry(this.app, settings.journalPath, heading, settings.headingLevel, formatEntry(text, kind), compare);
 			new Notice(t("notice.saved", { file }));
 		} catch (error) {
 			console.error("Unidaily: failed to write entry", error);

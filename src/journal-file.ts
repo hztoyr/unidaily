@@ -3,8 +3,8 @@
  * the journal file. The text transformations live in `journal.ts`.
  */
 
-import { App, MarkdownView, TFile, normalizePath } from "obsidian";
-import { insertEntry } from "./journal.ts";
+import { App, MarkdownView, TFile, moment, normalizePath } from "obsidian";
+import { insertDayHeading, insertEntry, type DateCompare, type Position } from "./journal.ts";
 
 /** Thrown when the configured journal path is taken by a folder. */
 export class JournalPathError extends Error {}
@@ -47,28 +47,79 @@ export async function appendEntry(
 	heading: string,
 	level: number,
 	entry: string,
+	compare?: DateCompare,
 ): Promise<void> {
 	const file = await ensureJournalFile(app, path);
-	await app.vault.process(file, (data) => insertEntry(data, heading, level, entry));
+	await app.vault.process(file, (data) => insertEntry(data, heading, level, entry, compare));
 }
 
 /**
- * Opens the journal (FR-17), reusing a tab that already shows it. With `line`,
- * scrolls to that 0-based line (used by the calendar, FR-16).
+ * Compares heading text with `target` by parsing it with the date format, in
+ * the current locale and in English (headings written under an English UI).
  */
-export async function openJournal(app: App, path: string, line?: number): Promise<void> {
+export function dateComparator(dateFormat: string, target: moment.Moment): DateCompare {
+	const day = target.clone().startOf("day");
+	const locales = [...new Set([moment.locale(), "en"])];
+	return (text) => {
+		for (const locale of locales) {
+			const parsed = moment(text, dateFormat, locale, true);
+			if (parsed.isValid()) return Math.sign(parsed.startOf("day").diff(day, "days"));
+		}
+		return null;
+	};
+}
+
+/** Adds an empty section for a day without a heading, in date order (calendar, FR-16). */
+export async function createDay(
+	app: App,
+	path: string,
+	heading: string,
+	level: number,
+	compare: DateCompare,
+): Promise<void> {
 	const file = await ensureJournalFile(app, path);
-	const eState = line === undefined ? undefined : { line };
+	await app.vault.process(file, (data) => insertDayHeading(data, heading, level, compare).content);
+}
 
-	const leaf = app.workspace
-		.getLeavesOfType("markdown")
-		.find((l) => l.view instanceof MarkdownView && l.view.file?.path === file.path);
-
+/** Opens the journal (FR-17), reusing a tab that already shows it. */
+export async function openJournal(app: App, path: string): Promise<void> {
+	const file = await ensureJournalFile(app, path);
+	const leaf = findJournalLeaf(app, file);
 	if (leaf) {
 		app.workspace.setActiveLeaf(leaf, { focus: true });
 		await app.workspace.revealLeaf(leaf);
-		if (eState) leaf.view.setEphemeralState(eState);
 		return;
 	}
-	await app.workspace.getLeaf(false).openFile(file, { active: true, eState });
+	await app.workspace.getLeaf(false).openFile(file, { active: true });
+}
+
+/**
+ * Opens the journal in editing mode and puts the cursor where `locate` says,
+ * computed from the editor's current text (calendar, FR-16).
+ */
+export async function openJournalAt(
+	app: App,
+	path: string,
+	locate: (text: string) => Position | null,
+): Promise<void> {
+	const file = await ensureJournalFile(app, path);
+	const leaf = findJournalLeaf(app, file) ?? app.workspace.getLeaf(false);
+	await leaf.openFile(file, { active: true, state: { mode: "source" } });
+	await app.workspace.revealLeaf(leaf);
+
+	const view = leaf.view;
+	if (!(view instanceof MarkdownView)) return;
+	const pos = locate(view.editor.getValue());
+	if (!pos) return;
+	view.editor.setCursor(pos);
+	view.editor.scrollIntoView({ from: pos, to: pos }, true);
+	view.editor.focus();
+}
+
+function findJournalLeaf(app: App, file: TFile) {
+	return (
+		app.workspace
+			.getLeavesOfType("markdown")
+			.find((l) => l.view instanceof MarkdownView && l.view.file?.path === file.path) ?? null
+	);
 }

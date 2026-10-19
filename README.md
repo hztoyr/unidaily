@@ -86,8 +86,8 @@ The calendar sits in the right sidebar and shows one month at a time.
 
 - Use the arrows to move between months, and **This month** to jump back.
 - Today is highlighted. Days that have entries are marked with a dot.
-- Click a day with entries to open the journal at that day's heading. If the journal is already open in a tab, that tab is reused.
-- Clicking a day without entries only shows a notice. The file is never changed.
+- Click a day with entries to open the journal with the cursor at the end of that day, ready to keep writing. If the journal is already open in a tab, that tab is reused.
+- Click a day without entries to create it: after you confirm, the day's heading is added in date order (not just at the top) and the cursor is placed on the empty line under it. Cancel leaves the file untouched. Future days can be created too, for plans or tasks.
 - The first day of the week follows Obsidian's language setting.
 
 If you close the calendar, run **Open calendar** to bring it back.
@@ -214,8 +214,8 @@ Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入�
 
 - 用左右箭头切换月份，点 **回到本月** 回到当前月份。
 - 今天会高亮显示，有记录的日期下方有一个小圆点。
-- 点击有记录的日期，会打开日记文件并跳到当天的标题；如果日记文件已经在某个标签页打开，会直接切换过去。
-- 点击没有记录的日期，只会弹出提示，不会修改文件。
+- 点击有记录的日期，会打开日记文件，光标停在当天内容的末尾，可以直接接着写；如果日记文件已经在某个标签页打开，会直接切换过去。
+- 点击没有记录的日期，会询问是否新建。确认后，这一天的标题会按日期顺序插入（不是一律放在最上面），光标停在标题下面的空行；点取消则不修改文件。未来的日期也可以新建，方便提前写计划或待办。
 - 每周从星期几开始，跟随 Obsidian 的语言设置。
 
 如果关掉了日历，执行 **打开日历** 命令就能重新打开。
