@@ -1,5 +1,6 @@
-import { App, ItemView, Modal, Notice, TAbstractFile, WorkspaceLeaf, moment, setIcon } from "obsidian";
+import { ItemView, Notice, TAbstractFile, WorkspaceLeaf, moment, setIcon } from "obsidian";
 import { monthGrid, type GridDay } from "./calendar.ts";
+import { ConfirmModal } from "./confirm-modal.ts";
 import type { Translator } from "./i18n.ts";
 import { buildHeading, findHeadingLine, indexHeadings, sectionEnd } from "./journal.ts";
 import { createDay, dateComparator, openJournalAt, readJournal } from "./journal-file.ts";
@@ -186,38 +187,3 @@ export class CalendarView extends ItemView {
 	}
 }
 
-interface ConfirmOptions {
-	title: string;
-	message: string;
-	confirm: string;
-	cancel: string;
-	onConfirm: () => void;
-}
-
-/** A small yes/no dialog. Esc or Cancel closes it without doing anything. */
-class ConfirmModal extends Modal {
-	private readonly options: ConfirmOptions;
-
-	constructor(app: App, options: ConfirmOptions) {
-		super(app);
-		this.options = options;
-	}
-
-	onOpen(): void {
-		const { title, message, confirm, cancel, onConfirm } = this.options;
-		this.titleEl.setText(title);
-		this.contentEl.createEl("p", { text: message });
-		const buttons = this.contentEl.createDiv({ cls: "modal-button-container" });
-		buttons.createEl("button", { text: cancel }).addEventListener("click", () => this.close());
-		const ok = buttons.createEl("button", { text: confirm, cls: "mod-cta" });
-		ok.addEventListener("click", () => {
-			this.close();
-			onConfirm();
-		});
-		ok.focus();
-	}
-
-	onClose(): void {
-		this.contentEl.empty();
-	}
-}

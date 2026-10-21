@@ -1,6 +1,8 @@
 import { Notice, Plugin, getAllTags, getLanguage, moment } from "obsidian";
 import { CalendarView, VIEW_TYPE_CALENDAR } from "./calendar-view.ts";
 import { CaptureModal } from "./capture-modal.ts";
+import { findConflicts } from "./conflicts.ts";
+import { pluginState } from "./plugin-control.ts";
 import { createTranslator, type Translator } from "./i18n.ts";
 import { buildHeading, formatEntry, type EntryKind } from "./journal.ts";
 import {
@@ -59,6 +61,18 @@ export default class UnidailyPlugin extends Plugin {
 				void this.app.workspace.getRightLeaf(false)?.setViewState({ type: VIEW_TYPE_CALENDAR });
 			}
 		});
+
+		// Once all plugins are loaded, warn once if a plugin that creates one file per day is on (FR-18).
+		this.app.workspace.onLayoutReady(() => this.warnAboutConflicts());
+	}
+
+	private warnAboutConflicts(): void {
+		const { conflicts } = findConflicts(pluginState(this.app));
+		if (conflicts.length === 0) return;
+		const names = conflicts
+			.map((c) => (c.id === "daily-notes" ? this.t("conflict.dailyNotes") : c.name))
+			.join(", ");
+		new Notice(this.t("notice.conflicts", { names }), 15_000);
 	}
 
 	async loadSettings(): Promise<void> {

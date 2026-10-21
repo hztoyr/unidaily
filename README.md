@@ -103,6 +103,9 @@ If you close the calendar, run **Open calendar** to bring it back.
 | Recent tags | 6 | Number of recent tags shown; 0 hides the row |
 | Frequent tags | 6 | Number of frequent tags shown; 0 hides the row |
 | Open calendar on startup | On | Adds the calendar to the right sidebar when Obsidian starts and it isn't open |
+| Conflicting plugins | — | Lists plugins that are turned on and create a separate file for each day (the core *Daily notes* plugin, Calendar, Periodic Notes, Journals), each with a **Turn off** button that asks before doing anything |
+
+If one of those plugins is on when Obsidian starts, Unidaily shows a short notice once. They are only turned off when you confirm.
 
 Weekday and month names follow Obsidian's interface language. In Obsidian 1.13 and later, these settings can also be found through the settings search.
 
@@ -232,6 +235,9 @@ Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入�
 | 最近标签显示数量 | 6 | 显示多少个最近标签，0 表示不显示这一行 |
 | 常用标签显示数量 | 6 | 显示多少个常用标签，0 表示不显示这一行 |
 | 启动时自动打开日历 | 开 | Obsidian 启动时，如果日历没有打开，就把它放到右侧边栏 |
+| 冲突检查 | — | 列出已启用、会为每一天生成单独文件的插件（Obsidian 自带的"日记"、Calendar、Periodic Notes、Journals），每个旁边有 **关闭** 按钮，点了会先确认 |
+
+Obsidian 启动时，如果发现这些插件中有开着的，会提示一次；只有你确认后才会关闭。
 
 星期和月份的名称跟随 Obsidian 的界面语言。在 Obsidian 1.13 及以上版本中，这些设置项也能在设置窗口的搜索框里搜到。
 

@@ -1,6 +1,9 @@
-import { App, Plugin, PluginSettingTab, Setting, moment, type SettingDefinitionItem } from "obsidian";
+import { App, Notice, Plugin, PluginSettingTab, Setting, moment, type SettingDefinitionItem } from "obsidian";
+import { ConfirmModal } from "./confirm-modal.ts";
+import { findConflicts, type DetectedConflict } from "./conflicts.ts";
 import type { Translator } from "./i18n.ts";
 import { buildHeading } from "./journal.ts";
+import { disablePlugin, pluginState } from "./plugin-control.ts";
 import {
 	DEFAULT_SETTINGS,
 	MAX_TAG_COUNT,
@@ -118,7 +121,61 @@ export class UnidailySettingTab extends PluginSettingTab {
 					);
 				},
 			},
+			{
+				name: t("settings.conflicts.name"),
+				desc: t("settings.conflicts.desc"),
+				render: (setting) => {
+					const list = setting.descEl.createDiv({ cls: "unidaily-conflicts" });
+					this.renderConflicts(list);
+				},
+			},
 		];
+	}
+
+	/** Lists enabled plugins that create one file per day, each with a turn-off button (FR-18). */
+	private renderConflicts(list: HTMLElement): void {
+		const { t } = this.host;
+		list.empty();
+		const report = findConflicts(pluginState(this.app));
+		for (const conflict of report.conflicts) {
+			const row = list.createDiv({ cls: "unidaily-conflict" });
+			row.createSpan({ cls: "unidaily-conflict-name", text: this.conflictLabel(conflict) });
+			row.createEl("button", { cls: "mod-warning", text: t("settings.conflicts.disable") }).addEventListener(
+				"click",
+				() => this.confirmDisable(conflict, list),
+			);
+		}
+		if (report.conflicts.length === 0) {
+			list.createDiv({ cls: "unidaily-conflict-ok", text: t("settings.conflicts.none") });
+		}
+		if (report.unknown) {
+			list.createDiv({ cls: "mod-warning", text: t("settings.conflicts.unknown") });
+		}
+	}
+
+	private conflictLabel(conflict: DetectedConflict): string {
+		const { t } = this.host;
+		const name = conflict.id === "daily-notes" ? t("conflict.dailyNotes") : conflict.name;
+		return `${name} · ${t(conflict.kind === "core" ? "conflict.core" : "conflict.community")}`;
+	}
+
+	private confirmDisable(conflict: DetectedConflict, list: HTMLElement): void {
+		const { t } = this.host;
+		const name = this.conflictLabel(conflict);
+		new ConfirmModal(this.app, {
+			title: t("conflict.confirmTitle"),
+			message: t("conflict.confirmMessage", { name }),
+			confirm: t("settings.conflicts.disable"),
+			cancel: t("modal.cancel"),
+			warning: true,
+			onConfirm: () => {
+				void (async () => {
+					const ok = await disablePlugin(this.app, conflict.kind, conflict.id);
+					new Notice(t(ok ? "notice.pluginDisabled" : "notice.pluginDisableFailed", { name }));
+					this.renderConflicts(list);
+				})();
+			},
+		}).open();
 	}
 
 	private countRow(field: "recentTagCount" | "frequentTagCount", name: string, desc: string): SettingRow {

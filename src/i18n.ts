@@ -56,6 +56,23 @@ const en = {
 	"settings.openCalendar.name": "Open calendar on startup",
 	"settings.openCalendar.desc":
 		"Add the calendar to the right sidebar when Obsidian starts and it isn't open. When off, use the \"Open calendar\" command.",
+	"settings.conflicts.name": "Conflicting plugins",
+	"settings.conflicts.desc":
+		"These plugins create a separate file for each day. While they are on, a misclick can create daily notes outside your journal file.",
+	"settings.conflicts.none": "No conflicting plugins are turned on.",
+	"settings.conflicts.unknown": "Could not check some plugins. Obsidian may have changed how plugins are managed.",
+	"settings.conflicts.disable": "Turn off",
+
+	// Conflicting plugins
+	"conflict.core": "core plugin",
+	"conflict.community": "community plugin",
+	"conflict.dailyNotes": "Daily notes",
+	"conflict.confirmTitle": "Turn off plugin",
+	"conflict.confirmMessage": "Turn off “{name}”? You can turn it on again in Obsidian's settings.",
+	"notice.conflicts":
+		"Unidaily: {names} can create a separate file for each day. You can turn it off under “Conflicting plugins” in Unidaily's settings.",
+	"notice.pluginDisabled": "Turned off “{name}”.",
+	"notice.pluginDisableFailed": "Could not turn off “{name}”. Please turn it off in Obsidian's settings.",
 } as const;
 
 export type StringKey = keyof typeof en;
@@ -105,6 +122,20 @@ const zh: Record<StringKey, string> = {
 	"settings.frequentCount.desc": "记录窗口中显示的库中最常用的标签数量。0 表示不显示该行。",
 	"settings.openCalendar.name": "启动时自动打开日历",
 	"settings.openCalendar.desc": "Obsidian 启动时，如果日历没有打开，就把它放到右侧边栏。关闭后，可以用\"打开日历\"命令手动打开。",
+	"settings.conflicts.name": "冲突检查",
+	"settings.conflicts.desc": "这些插件会为每一天生成单独的文件。开着它们时，误点可能会在日记文件之外生成日记。",
+	"settings.conflicts.none": "没有发现已启用的冲突插件。",
+	"settings.conflicts.unknown": "有些插件无法检测，可能是 Obsidian 改变了插件的管理方式。",
+	"settings.conflicts.disable": "关闭",
+
+	"conflict.core": "核心插件",
+	"conflict.community": "第三方插件",
+	"conflict.dailyNotes": "日记",
+	"conflict.confirmTitle": "关闭插件",
+	"conflict.confirmMessage": "要关闭“{name}”吗？以后可以在 Obsidian 设置里重新打开。",
+	"notice.conflicts": "Unidaily：{names} 会为每一天生成单独的文件，可以在 Unidaily 设置的“冲突检查”中关闭。",
+	"notice.pluginDisabled": "已关闭“{name}”。",
+	"notice.pluginDisableFailed": "无法关闭“{name}”，请在 Obsidian 设置中手动关闭。",
 };
 
 export type Locale = "en" | "zh";
