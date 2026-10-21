@@ -24,6 +24,38 @@ export function extractTags(text: string): string[] {
 	return result;
 }
 
+/** A piece of the capture input: plain text or a `#tag`. */
+export interface TextPart {
+	text: string;
+	tag: boolean;
+}
+
+/**
+ * Splits text into plain parts and tags, using the same rules as
+ * `extractTags` (tags inside inline code don't count). Joining the parts
+ * gives back the original text. Used to colour tags in the input (FR-2).
+ */
+export function splitTags(text: string): TextPart[] {
+	const code: [number, number][] = [];
+	for (const m of text.matchAll(INLINE_CODE_RE)) {
+		const start = m.index ?? 0;
+		code.push([start, start + m[0].length]);
+	}
+	const inCode = (i: number) => code.some(([s, e]) => i >= s && i < e);
+
+	const parts: TextPart[] = [];
+	let last = 0;
+	for (const m of text.matchAll(TAG_RE)) {
+		const start = m.index ?? 0;
+		if (!/\D/.test(m[1] ?? "") || inCode(start)) continue;
+		if (start > last) parts.push({ text: text.slice(last, start), tag: false });
+		parts.push({ text: m[0], tag: true });
+		last = start + m[0].length;
+	}
+	if (last < text.length) parts.push({ text: text.slice(last), tag: false });
+	return parts;
+}
+
 /**
  * Recent tags (FR-3): scans the journal from top to bottom (newest day first)
  * and keeps each tag's first occurrence. Frontmatter and code blocks are skipped.

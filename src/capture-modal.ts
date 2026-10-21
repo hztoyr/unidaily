@@ -1,7 +1,7 @@
 import { AbstractInputSuggest, App, Modal } from "obsidian";
 import type { Translator } from "./i18n.ts";
 import type { EntryKind } from "./journal.ts";
-import { applyTag, filterTags, hasTag, tagQueryAt, toggleTag, type TagQuery } from "./tags.ts";
+import { applyTag, filterTags, hasTag, splitTags, tagQueryAt, toggleTag, type TagQuery } from "./tags.ts";
 
 export interface CaptureOptions {
 	t: Translator;
@@ -26,6 +26,8 @@ export class CaptureModal extends Modal {
 	private readonly options: CaptureOptions;
 	private kind: EntryKind;
 	private inputEl: HTMLInputElement | null = null;
+	private backdrop: HTMLElement | null = null;
+	private backdropText: HTMLElement | null = null;
 	private suggest: TagSuggest | null = null;
 	private chips: { tag: string; el: HTMLElement }[] = [];
 	private kindButtons: { kind: EntryKind; el: HTMLElement }[] = [];
@@ -59,14 +61,24 @@ export class CaptureModal extends Modal {
 		});
 		this.setKind(this.kind);
 
-		const input = contentEl.createEl("input", {
+		// The input sits on top of a backdrop that shows the same text with #tags
+		// coloured; the input's own text is transparent, only its caret shows.
+		const field = contentEl.createDiv({ cls: "unidaily-capture-field" });
+		const backdrop = field.createDiv({ cls: "unidaily-capture-backdrop", attr: { "aria-hidden": "true" } });
+		this.backdropText = backdrop.createSpan({ cls: "unidaily-capture-backdrop-text" });
+		this.backdrop = backdrop;
+		const input = field.createEl("input", {
 			type: "text",
 			cls: "unidaily-capture-input",
 			attr: { placeholder: t("modal.placeholder"), enterkeyhint: "done" },
 		});
-		input.addEventListener("input", () => this.refreshChips());
+		input.addEventListener("input", () => this.refresh());
+		for (const event of ["scroll", "keyup", "keydown", "click", "select", "focus"]) {
+			input.addEventListener(event, () => this.syncScroll());
+		}
 		this.inputEl = input;
-		this.suggest = new TagSuggest(this.app, input, allTags, () => this.refreshChips());
+		this.matchBackdropToInput();
+		this.suggest = new TagSuggest(this.app, input, allTags, () => this.refresh());
 
 		const rows = contentEl.createDiv({ cls: "unidaily-tag-rows" });
 		this.addTagRow(rows, t("modal.recent"), recentTags);
@@ -97,6 +109,8 @@ export class CaptureModal extends Modal {
 		this.contentEl.empty();
 		this.chips = [];
 		this.kindButtons = [];
+		this.backdrop = null;
+		this.backdropText = null;
 	}
 
 	/** Switches between note and task; the title and the switch follow. */
@@ -144,14 +158,65 @@ export class CaptureModal extends Modal {
 		input.value = toggleTag(input.value, tag);
 		input.focus();
 		input.setSelectionRange(input.value.length, input.value.length);
-		this.refreshChips();
+		this.refresh();
 	}
 
-	private refreshChips(): void {
+	/** Updates chip highlighting and the coloured backdrop after the text changed. */
+	private refresh(): void {
 		const value = this.inputEl?.value ?? "";
 		for (const { tag, el } of this.chips) el.toggleClass("is-active", hasTag(value, tag));
+		this.renderBackdrop(value);
+	}
+
+	private renderBackdrop(value: string): void {
+		const target = this.backdropText;
+		if (!target) return;
+		target.empty();
+		for (const part of splitTags(value)) {
+			if (part.tag) target.createSpan({ cls: "unidaily-inline-tag", text: part.text });
+			else target.appendText(part.text);
+		}
+		this.syncScroll();
+	}
+
+	/** Keeps the backdrop scrolled exactly like the input when the text is longer than the box. */
+	private syncScroll(): void {
+		window.requestAnimationFrame(() => {
+			if (this.backdrop && this.inputEl) this.backdrop.scrollLeft = this.inputEl.scrollLeft;
+		});
+	}
+
+	/** Copies the input's font and box metrics so the backdrop text lines up with it. */
+	private matchBackdropToInput(): void {
+		if (!this.backdrop || !this.inputEl) return;
+		const style = window.getComputedStyle(this.inputEl);
+		const props: Record<string, string> = {};
+		for (const name of METRIC_PROPERTIES) props[name] = style.getPropertyValue(name);
+		this.backdrop.setCssProps(props);
 	}
 }
+
+/** CSS properties that decide where the input draws its text. */
+const METRIC_PROPERTIES = [
+	"font-family",
+	"font-size",
+	"font-weight",
+	"font-style",
+	"font-stretch",
+	"letter-spacing",
+	"word-spacing",
+	"text-transform",
+	"text-indent",
+	"padding-top",
+	"padding-right",
+	"padding-bottom",
+	"padding-left",
+	"border-top-width",
+	"border-right-width",
+	"border-bottom-width",
+	"border-left-width",
+	"border-radius",
+];
 
 /** `#` completion inside the capture input (FR-6). */
 class TagSuggest extends AbstractInputSuggest<string> {

@@ -26,8 +26,50 @@
 	color: var(--text-on-accent);
 }
 
-.unidaily-capture-input {
+/* Input with coloured #tags: a backdrop under a transparent-text input */
+.unidaily-capture-field {
+	position: relative;
 	width: 100%;
+}
+
+.unidaily-capture-backdrop {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+	box-sizing: border-box;
+	border-style: solid;
+	border-color: transparent;
+	background-color: var(--background-modifier-form-field);
+	color: var(--text-normal);
+	pointer-events: none;
+}
+
+.unidaily-capture-backdrop-text {
+	flex-shrink: 0;
+	white-space: pre;
+}
+
+.unidaily-capture-modal input.unidaily-capture-input {
+	position: relative;
+	width: 100%;
+	background-color: transparent;
+	color: transparent;
+	caret-color: var(--text-normal);
+}
+
+.unidaily-capture-modal input.unidaily-capture-input::placeholder {
+	color: var(--text-faint);
+}
+
+/* Same look as tags in notes. No padding or margin, so the text stays aligned
+   with the caret; the box-shadow gives the tag some room instead. */
+.unidaily-inline-tag {
+	color: var(--tag-color);
+	background-color: var(--tag-background);
+	border-radius: var(--tag-radius);
+	box-shadow: 0 0 0 2px var(--tag-background);
 }
 
 .unidaily-tag-rows {

@@ -8,6 +8,7 @@ import {
 	frequentTags,
 	hasTag,
 	recentTags,
+	splitTags,
 	tagQueryAt,
 	toggleTag,
 } from "../src/tags.ts";
@@ -199,5 +200,46 @@ describe("tagQueryAt / filterTags / applyTag (FR-6)", () => {
 		const q = tagQueryAt(text, 4);
 		assert.ok(q);
 		assert.deepEqual(applyTag(text, q, "#work"), { text: "a #work ", caret: 8 });
+	});
+});
+
+describe("splitTags (coloured tags in the input, FR-2)", () => {
+	const join = (text: string) => splitTags(text).map((p) => p.text).join("");
+
+	test("plain text and tags, in order", () => {
+		assert.deepEqual(splitTags("开会 #工作 下午 #Party/党费 "), [
+			{ text: "开会 ", tag: false },
+			{ text: "#工作", tag: true },
+			{ text: " 下午 ", tag: false },
+			{ text: "#Party/党费", tag: true },
+			{ text: " ", tag: false },
+		]);
+	});
+
+	test("tag at the very start and end", () => {
+		assert.deepEqual(splitTags("#a x #b"), [
+			{ text: "#a", tag: true },
+			{ text: " x ", tag: false },
+			{ text: "#b", tag: true },
+		]);
+	});
+
+	test("not tags: numbers only, glued to text, inside inline code", () => {
+		assert.deepEqual(splitTags("issue #2026 a#b `#code` ok"), [{ text: "issue #2026 a#b `#code` ok", tag: false }]);
+	});
+
+	test("punctuation ends a tag", () => {
+		assert.deepEqual(splitTags("#跑步，很累"), [
+			{ text: "#跑步", tag: true },
+			{ text: "，很累", tag: false },
+		]);
+	});
+
+	test("joining the parts gives back the text exactly", () => {
+		for (const text of ["", "   ", "#a  #b ", "x #XYLRBC/V2_4_0-2 y", "#", "a # b"]) assert.equal(join(text), text);
+	});
+
+	test("empty text gives no parts", () => {
+		assert.deepEqual(splitTags(""), []);
 	});
 });
