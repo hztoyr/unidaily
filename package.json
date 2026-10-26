@@ -1,6 +1,6 @@
 {
 	"name": "unidaily",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"description": "Single-file daily journal with quick capture, tag suggestions and a sidebar calendar.",
 	"main": "main.js",
 	"type": "module",

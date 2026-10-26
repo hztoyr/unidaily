@@ -1,27 +1,43 @@
 /* Unidaily styles */
 
-/* Capture modal */
-.unidaily-kind-switch {
-	display: inline-flex;
+/* Capture modal: Note | Task switch.
+   On mobile the modal stretches its children to full width and gives buttons
+   their own background, height and shadow; this keeps the switch as a small
+   outlined pill on both desktop and mobile (1.0.9). */
+.unidaily-capture-modal .unidaily-kind-switch {
+	display: flex;
+	align-self: flex-start;
+	width: fit-content;
+	max-width: 100%;
+	gap: 2px;
 	margin-bottom: var(--size-4-3);
 	padding: 2px;
+	border: 1px solid var(--background-modifier-border);
 	border-radius: var(--radius-m);
-	background-color: var(--background-modifier-hover);
+	background-color: transparent;
 }
 
-.unidaily-capture-modal .unidaily-kind-switch button {
+.unidaily-capture-modal .unidaily-kind-switch button,
+.is-mobile .unidaily-capture-modal .unidaily-kind-switch button {
+	flex: 0 0 auto;
+	width: auto;
+	min-width: 0;
 	height: auto;
+	min-height: 0;
+	margin: 0;
 	padding: var(--size-2-2) var(--size-4-3);
 	border: none;
 	border-radius: var(--radius-s);
-	background: none;
+	background-color: transparent;
 	box-shadow: none;
 	color: var(--text-muted);
 	font-size: var(--font-ui-small);
+	line-height: 1.4;
 	cursor: var(--cursor);
 }
 
-.unidaily-capture-modal .unidaily-kind-switch button.is-active {
+.unidaily-capture-modal .unidaily-kind-switch button.is-active,
+.is-mobile .unidaily-capture-modal .unidaily-kind-switch button.is-active {
 	background-color: var(--interactive-accent);
 	color: var(--text-on-accent);
 }
