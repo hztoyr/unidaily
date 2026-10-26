@@ -287,11 +287,22 @@
 	font-size: var(--font-ui-small);
 }
 
-.unidaily-calendar-action-icon {
+/* Fixed size that never shrinks: on the iPhone the icon was squeezed to
+   nothing inside the button, while desktop showed it (1.1.2). */
+.unidaily-calendar-action-icon,
+.is-mobile .unidaily-calendar-action-icon {
 	display: inline-flex;
-}
-
-.unidaily-calendar-action-icon svg {
+	flex: 0 0 auto;
 	width: var(--icon-s);
 	height: var(--icon-s);
+	min-width: var(--icon-s);
+}
+
+.unidaily-calendar-action-icon svg,
+.is-mobile .unidaily-calendar-action-icon svg {
+	display: block;
+	flex: 0 0 auto;
+	width: var(--icon-s);
+	height: var(--icon-s);
+	min-width: var(--icon-s);
 }
