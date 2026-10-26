@@ -40,6 +40,7 @@ describe("normalizeSettings", () => {
 			frequentTagCount: 10,
 			openCalendarOnStartup: false,
 			jumpToTodayOnOpen: false,
+			listMarkerOnNewDay: false,
 		};
 		assert.deepEqual(normalizeSettings(stored), stored);
 	});
@@ -64,6 +65,7 @@ describe("normalizeSettings", () => {
 			recentTagCount: NaN,
 			openCalendarOnStartup: "false",
 			jumpToTodayOnOpen: 1,
+			listMarkerOnNewDay: "yes",
 		});
 		assert.deepEqual(s, DEFAULT_SETTINGS);
 	});
@@ -77,6 +79,12 @@ describe("normalizeSettings", () => {
 		assert.equal(normalizeSettings({}).jumpToTodayOnOpen, true);
 		assert.equal(normalizeSettings({ openCalendarOnStartup: false }).jumpToTodayOnOpen, true);
 		assert.equal(normalizeSettings({ jumpToTodayOnOpen: false }).jumpToTodayOnOpen, false);
+	});
+
+	test("list marker on a new day defaults to on, also for settings saved by older versions", () => {
+		assert.equal(normalizeSettings({}).listMarkerOnNewDay, true);
+		assert.equal(normalizeSettings({ jumpToTodayOnOpen: false }).listMarkerOnNewDay, true);
+		assert.equal(normalizeSettings({ listMarkerOnNewDay: false }).listMarkerOnNewDay, false);
 	});
 
 	test("unknown fields are dropped", () => {

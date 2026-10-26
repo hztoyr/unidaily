@@ -131,22 +131,25 @@ export function insertEntry(
 }
 
 /**
- * Adds an empty section for a day that has no heading yet, in date order
- * (newest first), and returns the new content plus the line right under the
- * new heading, where the user can start writing. If the heading already
- * exists, the content is returned unchanged.
+ * Adds a section for a day that has no heading yet, in date order (newest
+ * first), and returns the new content plus the line right under the new
+ * heading, where the user can start writing. That line holds `firstLine`,
+ * e.g. `"- "` to start a list (FR-20). If the heading already exists, the
+ * content is returned unchanged.
  */
 export function insertDayHeading(
 	content: string,
 	heading: string,
 	level: number,
 	compare: DateCompare,
+	firstLine = "",
 ): { content: string; line: number } {
 	const { lines, eol, trailingNewline } = splitLines(content);
 	const target = heading.trimEnd();
 	const existing = scanHeadings(lines).find((h) => lines[h.line]?.trimEnd() === target);
 	if (existing) return { content, line: existing.line + 1 };
 	const line = addDaySection(lines, target, level, compare);
+	lines[line] = firstLine;
 	return { content: lines.join(eol) + (trailingNewline ? eol : ""), line };
 }
 

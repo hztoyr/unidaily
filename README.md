@@ -89,7 +89,7 @@ The calendar sits in the right sidebar and shows one month at a time.
 - Use the arrows to move between months, and **This month** to jump back.
 - Today is highlighted. Days that have entries are marked with a dot.
 - Click a day with entries to open the journal with the cursor at the end of that day, ready to keep writing. If the journal is already open in a tab, that tab is reused.
-- Click a day without entries to create it: after you confirm, the day's heading is added in date order (not just at the top) and the cursor is placed on the empty line under it. Cancel leaves the file untouched. Future days can be created too, for plans or tasks.
+- Click a day without entries to create it: after you confirm, the day's heading is added in date order (not just at the top), the line under it starts with `- ` and the cursor is placed after it, ready to type (this can be turned off in the settings). Cancel leaves the file untouched. Future days can be created too, for plans or tasks.
 - The first day of the week follows Obsidian's language setting.
 
 Below the month there are two buttons, **Capture note** and **Capture task**, that open the capture window. They are handy on your phone, where there are no hotkeys.
@@ -107,6 +107,7 @@ If you close the calendar, run **Open calendar** to bring it back.
 | Frequent tags | 6 | Number of frequent tags shown; 0 hides the row |
 | Open calendar on startup | On | Adds the calendar to the right sidebar when Obsidian starts and it isn't open |
 | Jump to today when opening the journal | On | When the journal is newly opened (from a bookmark, the file list, a widget…), the cursor goes to the end of today; if today has no entries yet, you're asked once a day whether to create it |
+| Start a new day with a list item | On | When you create a day (from the calendar or when opening the journal), the line under the new date heading starts with `- `, ready to type. When off, the line is left empty |
 | Conflicting plugins | — | Lists plugins that are turned on and create a separate file for each day (the core *Daily notes* plugin, Calendar, Periodic Notes, Journals), each with a **Turn off** button that asks before doing anything |
 
 If one of those plugins is on when Obsidian starts, Unidaily shows a short notice once. They are only turned off when you confirm.
@@ -228,7 +229,7 @@ Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入�
 - 用左右箭头切换月份，点 **回到本月** 回到当前月份。
 - 今天会高亮显示，有记录的日期下方有一个小圆点。
 - 点击有记录的日期，会打开日记文件，光标停在当天内容的末尾，可以直接接着写；如果日记文件已经在某个标签页打开，会直接切换过去。
-- 点击没有记录的日期，会询问是否新建。确认后，这一天的标题会按日期顺序插入（不是一律放在最上面），光标停在标题下面的空行；点取消则不修改文件。未来的日期也可以新建，方便提前写计划或待办。
+- 点击没有记录的日期，会询问是否新建。确认后，这一天的标题会按日期顺序插入（不是一律放在最上面），标题下面一行自动写好 `- `，光标停在它后面，可以直接输入（可以在设置里关掉）；点取消则不修改文件。未来的日期也可以新建，方便提前写计划或待办。
 - 每周从星期几开始，跟随 Obsidian 的语言设置。
 
 月历下方有 **记一笔** 和 **记待办** 两个按钮，点击即可打开记录窗口，手机上没有快捷键时尤其方便。
@@ -246,6 +247,7 @@ Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入�
 | 常用标签显示数量 | 6 | 显示多少个常用标签，0 表示不显示这一行 |
 | 启动时自动打开日历 | 开 | Obsidian 启动时，如果日历没有打开，就把它放到右侧边栏 |
 | 打开日记文件时跳到今天 | 开 | 新打开日记文件时（从书签、文件列表、小组件等），光标跳到今天内容的末尾；今天还没有记录时，每天询问一次是否新建 |
+| 新建日期后自动加列表符号 | 开 | 新建某一天后（在日历上或打开日记文件时），日期标题下面一行自动写好 `- `，可以直接输入；关闭后这一行留空 |
 | 冲突检查 | — | 列出已启用、会为每一天生成单独文件的插件（Obsidian 自带的"日记"、Calendar、Periodic Notes、Journals），每个旁边有 **关闭** 按钮，点了会先确认 |
 
 Obsidian 启动时，如果发现这些插件中有开着的，会提示一次；只有你确认后才会关闭。

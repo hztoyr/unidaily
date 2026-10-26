@@ -296,6 +296,56 @@ describe("insertDayHeading (calendar: create a day, FR-16)", () => {
 		const result = insertDayHeading(before, D12, 3, byDate("2026-10-12"));
 		assert.equal(result.content, [D15, "- a", "", D12, "", "", D10, ""].join("\r\n"));
 	});
+
+	describe("first line under the new heading (FR-20)", () => {
+		test("empty file", () => {
+			assert.deepEqual(insertDayHeading("", D12, 3, byDate("2026-10-12"), "- "), {
+				content: md(D12, "- "),
+				line: 1,
+			});
+		});
+
+		test("newest day on top keeps the blank line before the next day", () => {
+			assert.deepEqual(insertDayHeading(md(D15, "- a"), D20, 3, byDate("2026-10-20"), "- "), {
+				content: md(D20, "- ", "", D15, "- a"),
+				line: 1,
+			});
+		});
+
+		test("a past day between its neighbours", () => {
+			const before = md(D15, "- a", "", D10, "- b");
+			assert.deepEqual(insertDayHeading(before, D12, 3, byDate("2026-10-12"), "- "), {
+				content: md(D15, "- a", "", D12, "- ", "", D10, "- b"),
+				line: 4,
+			});
+		});
+
+		test("the oldest day at the end", () => {
+			assert.deepEqual(insertDayHeading(md(D15, "- a", "", ""), D10, 3, byDate("2026-10-10"), "- "), {
+				content: md(D15, "- a", "", D10, "- "),
+				line: 4,
+			});
+		});
+
+		test("after frontmatter", () => {
+			const before = md("---", "a: 1", "---", D10, "- b");
+			assert.deepEqual(insertDayHeading(before, D12, 3, byDate("2026-10-12"), "- "), {
+				content: md("---", "a: 1", "---", D12, "- ", "", D10, "- b"),
+				line: 4,
+			});
+		});
+
+		test("an existing heading is left alone", () => {
+			const before = md(D15, "- a", "", D12, "");
+			assert.deepEqual(insertDayHeading(before, D12, 3, byDate("2026-10-12"), "- "), { content: before, line: 4 });
+		});
+
+		test("CRLF is preserved", () => {
+			const before = [D15, "- a", "", D10, ""].join("\r\n");
+			const result = insertDayHeading(before, D12, 3, byDate("2026-10-12"), "- ");
+			assert.equal(result.content, [D15, "- a", "", D12, "- ", "", D10, ""].join("\r\n"));
+		});
+	});
 });
 
 describe("insertEntry with date order (capture when today is missing)", () => {

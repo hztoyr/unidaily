@@ -69,16 +69,20 @@ export function dateComparator(dateFormat: string, target: moment.Moment): DateC
 	};
 }
 
-/** Adds an empty section for a day without a heading, in date order (calendar, FR-16). */
+/**
+ * Adds a section for a day without a heading, in date order (calendar, FR-16);
+ * the line under the heading holds `firstLine` (FR-20).
+ */
 export async function createDay(
 	app: App,
 	path: string,
 	heading: string,
 	level: number,
 	compare: DateCompare,
+	firstLine = "",
 ): Promise<void> {
 	const file = await ensureJournalFile(app, path);
-	await app.vault.process(file, (data) => insertDayHeading(data, heading, level, compare).content);
+	await app.vault.process(file, (data) => insertDayHeading(data, heading, level, compare, firstLine).content);
 }
 
 /** Opens the journal (FR-17), reusing a tab that already shows it. */

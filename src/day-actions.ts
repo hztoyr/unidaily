@@ -60,14 +60,20 @@ export function confirmCreateDay(host: DayHost, date: moment.Moment): void {
 	}).open();
 }
 
-/** Adds the day's heading in date order and puts the cursor on the empty line under it. */
+/**
+ * Adds the day's heading in date order and puts the cursor at the end of the
+ * line under it, which starts with `- ` when that setting is on (FR-20).
+ */
 async function createAndOpenDay(host: DayHost, date: moment.Moment): Promise<void> {
-	const { journalPath, headingLevel, dateFormat } = host.settings;
+	const { journalPath, headingLevel, dateFormat, listMarkerOnNewDay } = host.settings;
 	const heading = buildHeading(headingLevel, date.format(dateFormat));
-	await createDay(host.app, journalPath, heading, headingLevel, dateComparator(dateFormat, date));
+	const firstLine = listMarkerOnNewDay ? "- " : "";
+	await createDay(host.app, journalPath, heading, headingLevel, dateComparator(dateFormat, date), firstLine);
 	await openJournalAt(host.app, journalPath, (text) => {
 		const line = findHeadingLine(text, heading);
-		return line < 0 ? null : { line: line + 1, ch: 0 };
+		if (line < 0) return null;
+		const below = text.split(/\r?\n/)[line + 1] ?? "";
+		return { line: line + 1, ch: below.length };
 	});
 }
 

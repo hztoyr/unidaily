@@ -18,6 +18,8 @@ export interface UnidailySettings {
 	openCalendarOnStartup: boolean;
 	/** When the journal is newly opened, jump to today or offer to create it (FR-19). */
 	jumpToTodayOnOpen: boolean;
+	/** Start the line under a newly created day heading with `- ` (FR-20). */
+	listMarkerOnNewDay: boolean;
 }
 
 export const DEFAULT_SETTINGS: Readonly<UnidailySettings> = {
@@ -28,6 +30,7 @@ export const DEFAULT_SETTINGS: Readonly<UnidailySettings> = {
 	frequentTagCount: 6,
 	openCalendarOnStartup: true,
 	jumpToTodayOnOpen: true,
+	listMarkerOnNewDay: true,
 };
 
 export const MAX_TAG_COUNT = 20;
@@ -69,6 +72,8 @@ export function normalizeSettings(raw: unknown): UnidailySettings {
 				: DEFAULT_SETTINGS.openCalendarOnStartup,
 		jumpToTodayOnOpen:
 			typeof data.jumpToTodayOnOpen === "boolean" ? data.jumpToTodayOnOpen : DEFAULT_SETTINGS.jumpToTodayOnOpen,
+		listMarkerOnNewDay:
+			typeof data.listMarkerOnNewDay === "boolean" ? data.listMarkerOnNewDay : DEFAULT_SETTINGS.listMarkerOnNewDay,
 	};
 }
 

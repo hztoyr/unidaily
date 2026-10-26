@@ -134,6 +134,18 @@ export class UnidailySettingTab extends PluginSettingTab {
 				},
 			},
 			{
+				name: t("settings.listMarker.name"),
+				desc: t("settings.listMarker.desc"),
+				render: (setting) => {
+					setting.addToggle((toggle) =>
+						toggle.setValue(settings.listMarkerOnNewDay).onChange(async (value) => {
+							settings.listMarkerOnNewDay = value;
+							await save();
+						}),
+					);
+				},
+			},
+			{
 				name: t("settings.conflicts.name"),
 				desc: t("settings.conflicts.desc"),
 				render: (setting) => {
