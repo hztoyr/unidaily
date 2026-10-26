@@ -2,6 +2,7 @@ import { AbstractInputSuggest, App, Modal } from "obsidian";
 import type { Translator } from "./i18n.ts";
 import type { EntryKind } from "./journal.ts";
 import { applyTag, filterTags, hasTag, splitTags, tagQueryAt, toggleTag, type TagQuery } from "./tags.ts";
+import { PlainTextBox } from "./text-box.ts";
 
 export interface CaptureOptions {
 	t: Translator;
@@ -18,14 +19,14 @@ export interface CaptureOptions {
 }
 
 /**
- * Capture window (FR-1 – FR-8): a note/task switch, a single-line input, rows
- * of recent and frequent tag chips, and `#` completion. It only collects
- * text; writing to the journal is up to `onSubmit`.
+ * Capture window (FR-1 – FR-8): a note/task switch, a text box that wraps and
+ * grows with long text, rows of recent and frequent tag chips, and `#`
+ * completion. It only collects text; writing to the journal is up to `onSubmit`.
  */
 export class CaptureModal extends Modal {
 	private readonly options: CaptureOptions;
 	private kind: EntryKind;
-	private inputEl: HTMLInputElement | null = null;
+	private box: PlainTextBox | null = null;
 	private backdrop: HTMLElement | null = null;
 	private backdropText: HTMLElement | null = null;
 	private suggest: TagSuggest | null = null;
@@ -61,24 +62,29 @@ export class CaptureModal extends Modal {
 		});
 		this.setKind(this.kind);
 
-		// The input sits on top of a backdrop that shows the same text with #tags
-		// coloured; the input's own text is transparent, only its caret shows.
+		// The text box sits on top of a backdrop that shows the same text with
+		// #tags coloured; the box's own text is transparent, only its caret shows.
+		// Both wrap the same way, so long text grows to several lines (1.0.7).
 		const field = contentEl.createDiv({ cls: "unidaily-capture-field" });
 		const backdrop = field.createDiv({ cls: "unidaily-capture-backdrop", attr: { "aria-hidden": "true" } });
 		this.backdropText = backdrop.createSpan({ cls: "unidaily-capture-backdrop-text" });
 		this.backdrop = backdrop;
-		const input = field.createEl("input", {
-			type: "text",
-			cls: "unidaily-capture-input",
-			attr: { placeholder: t("modal.placeholder"), enterkeyhint: "done" },
+		const box = new PlainTextBox(field, { cls: "unidaily-capture-input", placeholder: t("modal.placeholder") });
+		box.el.addEventListener("input", (evt) => {
+			// Don't touch the text while an IME is still composing.
+			if (!(evt instanceof InputEvent && evt.isComposing)) box.normalize();
+			this.refresh();
 		});
-		input.addEventListener("input", () => this.refresh());
-		for (const event of ["scroll", "keyup", "keydown", "click", "select", "focus"]) {
-			input.addEventListener(event, () => this.syncScroll());
+		box.el.addEventListener("compositionend", () => {
+			box.normalize();
+			this.refresh();
+		});
+		for (const event of ["scroll", "keyup", "click", "focus"]) {
+			box.el.addEventListener(event, () => this.syncScroll());
 		}
-		this.inputEl = input;
-		this.matchBackdropToInput();
-		this.suggest = new TagSuggest(this.app, input, allTags, () => this.refresh());
+		this.box = box;
+		this.matchBackdropToBox();
+		this.suggest = new TagSuggest(this.app, box, allTags, () => this.refresh());
 
 		const rows = contentEl.createDiv({ cls: "unidaily-tag-rows" });
 		this.addTagRow(rows, t("modal.recent"), recentTags);
@@ -101,7 +107,7 @@ export class CaptureModal extends Modal {
 			return false;
 		});
 
-		input.focus();
+		box.focus();
 	}
 
 	onClose(): void {
@@ -111,6 +117,7 @@ export class CaptureModal extends Modal {
 		this.kindButtons = [];
 		this.backdrop = null;
 		this.backdropText = null;
+		this.box = null;
 	}
 
 	/** Switches between note and task; the title and the switch follow. */
@@ -123,15 +130,15 @@ export class CaptureModal extends Modal {
 			el.toggleClass("is-active", k === kind);
 			el.setAttr("aria-pressed", String(k === kind));
 		}
-		this.inputEl?.focus();
+		this.box?.focus();
 	}
 
 	private submit(): void {
-		const input = this.inputEl;
-		if (!input) return;
-		const text = input.value.trim();
+		const box = this.box;
+		if (!box) return;
+		const text = box.value.trim();
 		if (text === "") {
-			input.focus();
+			box.focus();
 			return;
 		}
 		this.close();
@@ -152,18 +159,18 @@ export class CaptureModal extends Modal {
 	}
 
 	private toggle(tag: string): void {
-		const input = this.inputEl;
-		if (!input) return;
+		const box = this.box;
+		if (!box) return;
 		this.suggest?.close();
-		input.value = toggleTag(input.value, tag);
-		input.focus();
-		input.setSelectionRange(input.value.length, input.value.length);
+		box.value = toggleTag(box.value, tag);
+		box.focus();
+		box.caret = box.value.length;
 		this.refresh();
 	}
 
 	/** Updates chip highlighting and the coloured backdrop after the text changed. */
 	private refresh(): void {
-		const value = this.inputEl?.value ?? "";
+		const value = this.box?.value ?? "";
 		for (const { tag, el } of this.chips) el.toggleClass("is-active", hasTag(value, tag));
 		this.renderBackdrop(value);
 	}
@@ -179,30 +186,31 @@ export class CaptureModal extends Modal {
 		this.syncScroll();
 	}
 
-	/** Keeps the backdrop scrolled exactly like the input when the text is longer than the box. */
+	/** Keeps the backdrop scrolled exactly like the box once the text is taller than six lines. */
 	private syncScroll(): void {
 		window.requestAnimationFrame(() => {
-			if (this.backdrop && this.inputEl) this.backdrop.scrollLeft = this.inputEl.scrollLeft;
+			if (this.backdrop && this.box) this.backdrop.scrollTop = this.box.el.scrollTop;
 		});
 	}
 
-	/** Copies the input's font and box metrics so the backdrop text lines up with it. */
-	private matchBackdropToInput(): void {
-		if (!this.backdrop || !this.inputEl) return;
-		const style = window.getComputedStyle(this.inputEl);
+	/** Copies the box's font and spacing so the backdrop text wraps and lines up exactly like it. */
+	private matchBackdropToBox(): void {
+		if (!this.backdrop || !this.box) return;
+		const style = window.getComputedStyle(this.box.el);
 		const props: Record<string, string> = {};
 		for (const name of METRIC_PROPERTIES) props[name] = style.getPropertyValue(name);
 		this.backdrop.setCssProps(props);
 	}
 }
 
-/** CSS properties that decide where the input draws its text. */
+/** CSS properties that decide where the box draws and wraps its text. */
 const METRIC_PROPERTIES = [
 	"font-family",
 	"font-size",
 	"font-weight",
 	"font-style",
 	"font-stretch",
+	"line-height",
 	"letter-spacing",
 	"word-spacing",
 	"text-transform",
@@ -218,24 +226,23 @@ const METRIC_PROPERTIES = [
 	"border-radius",
 ];
 
-/** `#` completion inside the capture input (FR-6). */
+/** `#` completion inside the capture text box (FR-6). */
 class TagSuggest extends AbstractInputSuggest<string> {
-	private readonly input: HTMLInputElement;
+	private readonly box: PlainTextBox;
 	private readonly tags: readonly string[];
 	private readonly onApplied: () => void;
 	private query: TagQuery | null = null;
 
-	constructor(app: App, input: HTMLInputElement, tags: readonly string[], onApplied: () => void) {
-		super(app, input);
-		this.input = input;
+	constructor(app: App, box: PlainTextBox, tags: readonly string[], onApplied: () => void) {
+		super(app, box.el);
+		this.box = box;
 		this.tags = tags;
 		this.onApplied = onApplied;
 		this.limit = 50;
 	}
 
 	protected getSuggestions(): string[] {
-		const caret = this.input.selectionStart ?? this.input.value.length;
-		this.query = tagQueryAt(this.input.value, caret);
+		this.query = tagQueryAt(this.box.value, this.box.caret);
 		return this.query ? filterTags(this.tags, this.query.query) : [];
 	}
 
@@ -245,9 +252,9 @@ class TagSuggest extends AbstractInputSuggest<string> {
 
 	selectSuggestion(tag: string): void {
 		if (this.query) {
-			const { text, caret } = applyTag(this.input.value, this.query, tag);
-			this.input.value = text;
-			this.input.setSelectionRange(caret, caret);
+			const { text, caret } = applyTag(this.box.value, this.query, tag);
+			this.box.value = text;
+			this.box.caret = caret;
 		}
 		this.close();
 		this.onApplied();

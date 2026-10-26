@@ -26,19 +26,26 @@
 	color: var(--text-on-accent);
 }
 
-/* Input with coloured #tags: a backdrop under a transparent-text input */
+/* Text box with coloured #tags: a backdrop under a transparent-text box.
+   Both wrap the same way; the box grows with the text up to six lines. */
 .unidaily-capture-field {
 	position: relative;
 	width: 100%;
 }
 
+.unidaily-capture-backdrop,
+.unidaily-capture-input {
+	box-sizing: border-box;
+	width: 100%;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+	word-break: normal;
+}
+
 .unidaily-capture-backdrop {
 	position: absolute;
 	inset: 0;
-	display: flex;
-	align-items: center;
 	overflow: hidden;
-	box-sizing: border-box;
 	border-style: solid;
 	border-color: transparent;
 	background-color: var(--background-modifier-form-field);
@@ -46,21 +53,39 @@
 	pointer-events: none;
 }
 
-.unidaily-capture-backdrop-text {
-	flex-shrink: 0;
-	white-space: pre;
-}
-
-.unidaily-capture-modal input.unidaily-capture-input {
+.unidaily-capture-input {
 	position: relative;
-	width: 100%;
+	display: block;
+	padding: var(--size-4-2) var(--size-4-3);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--input-radius);
+	font-size: var(--font-ui-medium);
+	line-height: 1.5;
+	/* one line … six lines, then the box scrolls */
+	min-height: calc(1.5em + 2 * var(--size-4-2) + 2px);
+	max-height: calc(9em + 2 * var(--size-4-2) + 2px);
+	overflow-y: auto;
 	background-color: transparent;
 	color: transparent;
 	caret-color: var(--text-normal);
+	outline: none;
+	/* a scrollbar would narrow the text and break the alignment with the backdrop */
+	scrollbar-width: none;
 }
 
-.unidaily-capture-modal input.unidaily-capture-input::placeholder {
+.unidaily-capture-input::-webkit-scrollbar {
+	display: none;
+}
+
+.unidaily-capture-input:focus {
+	border-color: var(--background-modifier-border-focus);
+	box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
+}
+
+.unidaily-capture-input:empty::before {
+	content: attr(data-placeholder);
 	color: var(--text-faint);
+	pointer-events: none;
 }
 
 /* Same look as tags in notes. No padding or margin, so the text stays aligned

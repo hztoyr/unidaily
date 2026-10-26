@@ -63,6 +63,7 @@ You can also run every command from the command palette (`Ctrl/Cmd + P`):
 ## Capturing entries
 
 - The switch at the top shows whether the entry will be a **Note** or a **Task**. Click the other side, or press Alt+J / Alt+T while the window is open, to change it; what you've typed is kept.
+- Long text wraps onto several lines and the text box grows with it (up to six lines, then it scrolls). It is still saved as one line in the journal.
 - **Enter** saves the entry and closes the window. **Esc** closes it without saving.
 - Empty text isn't saved; the window stays open.
 - The entry goes under today's heading, after the entries you already wrote today.
@@ -199,6 +200,7 @@ Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入�
 ### 记录
 
 - 窗口顶部的切换按钮显示这条记录是 **记一笔** 还是 **记待办**。点另一边，或者在窗口打开时按 Alt+J / Alt+T，就能切换，已经输入的内容不会丢失。
+- 内容较长时会自动换行，输入框随之变高（最多约 6 行，再多就在框内滚动）。写进日记时仍然是一行。
 - **回车** 保存并关闭窗口，**Esc** 不保存直接关闭。
 - 内容为空时不会保存，窗口保持打开。
 - 记录会写到今天的日期标题下面，排在今天已有记录的后面。
