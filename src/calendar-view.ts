@@ -2,7 +2,7 @@ import { ItemView, TAbstractFile, WorkspaceLeaf, moment, setIcon } from "obsidia
 import { monthGrid, type GridDay } from "./calendar.ts";
 import { confirmCreateDay, findDayHeading, openDayEnd, runReporting, type DayHost } from "./day-actions.ts";
 import type { Translator } from "./i18n.ts";
-import { indexHeadings } from "./journal.ts";
+import { indexHeadings, type EntryKind } from "./journal.ts";
 import { readJournal } from "./journal-file.ts";
 import type { UnidailySettings } from "./settings.ts";
 
@@ -12,6 +12,8 @@ export const VIEW_TYPE_CALENDAR = "unidaily-calendar";
 export interface CalendarHost {
 	settings: UnidailySettings;
 	t: Translator;
+	/** Opens the capture window in note or task mode. */
+	openCapture(kind: EntryKind): void;
 }
 
 /**
@@ -107,6 +109,18 @@ export class CalendarView extends ItemView {
 		for (const week of monthGrid(this.month.year(), this.month.month(), firstDay)) {
 			for (const day of week) this.dayCell(grid, day, headings);
 		}
+
+		// Shortcuts to the capture window, handy on the phone where there are no hotkeys (1.0.8).
+		const actions = root.createDiv({ cls: "unidaily-calendar-actions" });
+		this.captureButton(actions, "pencil", t("command.captureNote"), "note");
+		this.captureButton(actions, "check-square", t("command.captureTask"), "task");
+	}
+
+	private captureButton(parent: HTMLElement, icon: string, label: string, kind: EntryKind): void {
+		const button = parent.createEl("button", { cls: "unidaily-calendar-action" });
+		setIcon(button.createSpan({ cls: "unidaily-calendar-action-icon" }), icon);
+		button.createSpan({ text: label });
+		button.addEventListener("click", () => this.host.openCapture(kind));
 	}
 
 	private navButton(parent: HTMLElement, icon: string, label: string, onClick: () => void): void {

@@ -92,6 +92,8 @@ The calendar sits in the right sidebar and shows one month at a time.
 - Click a day without entries to create it: after you confirm, the day's heading is added in date order (not just at the top) and the cursor is placed on the empty line under it. Cancel leaves the file untouched. Future days can be created too, for plans or tasks.
 - The first day of the week follows Obsidian's language setting.
 
+Below the month there are two buttons, **Capture note** and **Capture task**, that open the capture window. They are handy on your phone, where there are no hotkeys.
+
 If you close the calendar, run **Open calendar** to bring it back.
 
 ## Settings
@@ -228,6 +230,8 @@ Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入�
 - 点击有记录的日期，会打开日记文件，光标停在当天内容的末尾，可以直接接着写；如果日记文件已经在某个标签页打开，会直接切换过去。
 - 点击没有记录的日期，会询问是否新建。确认后，这一天的标题会按日期顺序插入（不是一律放在最上面），光标停在标题下面的空行；点取消则不修改文件。未来的日期也可以新建，方便提前写计划或待办。
 - 每周从星期几开始，跟随 Obsidian 的语言设置。
+
+月历下方有 **记一笔** 和 **记待办** 两个按钮，点击即可打开记录窗口，手机上没有快捷键时尤其方便。
 
 如果关掉了日历，执行 **打开日历** 命令就能重新打开。
 

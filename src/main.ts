@@ -37,13 +37,13 @@ export default class UnidailyPlugin extends Plugin {
 			id: "capture-note",
 			name: t("command.captureNote"),
 			hotkeys: [{ modifiers: ["Alt"], key: "J" }],
-			callback: () => void this.openCapture("note"),
+			callback: () => this.openCapture("note"),
 		});
 		this.addCommand({
 			id: "capture-task",
 			name: t("command.captureTask"),
 			hotkeys: [{ modifiers: ["Alt"], key: "T" }],
-			callback: () => void this.openCapture("task"),
+			callback: () => this.openCapture("task"),
 		});
 		this.addCommand({
 			id: "open-journal",
@@ -137,7 +137,12 @@ export default class UnidailyPlugin extends Plugin {
 		if (leaf) await workspace.revealLeaf(leaf);
 	}
 
-	private async openCapture(kind: EntryKind): Promise<void> {
+	/** Opens the capture window (commands, hotkeys and the calendar buttons). */
+	openCapture(kind: EntryKind): void {
+		void runReporting(() => this.showCapture(kind));
+	}
+
+	private async showCapture(kind: EntryKind): Promise<void> {
 		const { settings, t } = this;
 		const content = await readJournal(this.app, settings.journalPath);
 		const allTags = this.vaultTagsByUse();

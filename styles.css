@@ -252,3 +252,30 @@
 .unidaily-conflict-ok {
 	color: var(--text-success);
 }
+
+/* Calendar: shortcuts to the capture window (1.0.8) */
+.unidaily-calendar-actions {
+	display: flex;
+	gap: var(--size-4-2);
+	margin-top: var(--size-4-3);
+}
+
+.unidaily-calendar button.unidaily-calendar-action {
+	flex: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--size-4-1);
+	height: auto;
+	padding: var(--size-4-1) var(--size-4-2);
+	font-size: var(--font-ui-small);
+}
+
+.unidaily-calendar-action-icon {
+	display: inline-flex;
+}
+
+.unidaily-calendar-action-icon svg {
+	width: var(--icon-s);
+	height: var(--icon-s);
+}
