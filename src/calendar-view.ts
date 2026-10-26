@@ -1,9 +1,9 @@
-import { ItemView, Notice, TAbstractFile, WorkspaceLeaf, moment, setIcon } from "obsidian";
+import { ItemView, TAbstractFile, WorkspaceLeaf, moment, setIcon } from "obsidian";
 import { monthGrid, type GridDay } from "./calendar.ts";
-import { ConfirmModal } from "./confirm-modal.ts";
+import { confirmCreateDay, findDayHeading, openDayEnd, runReporting, type DayHost } from "./day-actions.ts";
 import type { Translator } from "./i18n.ts";
-import { buildHeading, findHeadingLine, indexHeadings, sectionEnd } from "./journal.ts";
-import { createDay, dateComparator, openJournalAt, readJournal } from "./journal-file.ts";
+import { indexHeadings } from "./journal.ts";
+import { readJournal } from "./journal-file.ts";
 import type { UnidailySettings } from "./settings.ts";
 
 export const VIEW_TYPE_CALENDAR = "unidaily-calendar";
@@ -126,64 +126,17 @@ export class CalendarView extends ItemView {
 			cell.createDiv({ cls: "unidaily-calendar-dot" });
 		}
 		cell.addEventListener("click", () => {
-			if (headingText !== undefined) void this.run(() => this.openDayEnd(headingText));
-			else this.confirmCreate(date);
+			if (headingText !== undefined) void runReporting(() => openDayEnd(this.dayHost(), headingText));
+			else confirmCreateDay(this.dayHost(), date);
 		});
 	}
 
-	/**
-	 * Finds the heading text of a date in the journal. Besides the current
-	 * locale, the English spelling is tried so headings written under an
-	 * English UI still match.
-	 */
 	private lookup(date: moment.Moment, headings: Map<string, number>): string | undefined {
-		const { dateFormat } = this.host.settings;
-		const local = date.format(dateFormat).trimEnd();
-		if (headings.has(local)) return local;
-		const english = date.clone().locale("en").format(dateFormat).trimEnd();
-		return headings.has(english) ? english : undefined;
+		return findDayHeading(headings, this.host.settings, date);
 	}
 
-	/** Opens the journal with the cursor at the end of that day's content. */
-	private async openDayEnd(headingText: string): Promise<void> {
-		const { journalPath, headingLevel } = this.host.settings;
-		const heading = buildHeading(headingLevel, headingText);
-		await openJournalAt(this.app, journalPath, (text) => {
-			const line = findHeadingLine(text, heading);
-			return line < 0 ? null : sectionEnd(text, line, headingLevel);
-		});
-	}
-
-	/** Asks before creating a day that has no heading yet. */
-	private confirmCreate(date: moment.Moment): void {
-		const { t } = this.host;
-		new ConfirmModal(this.app, {
-			title: t("calendar.createTitle"),
-			message: t("calendar.createMessage", { date: date.format(t("calendar.dateDisplay")) }),
-			confirm: t("calendar.create"),
-			cancel: t("modal.cancel"),
-			onConfirm: () => void this.run(() => this.createAndOpen(date)),
-		}).open();
-	}
-
-	/** Adds the day's heading in date order and puts the cursor on the empty line under it. */
-	private async createAndOpen(date: moment.Moment): Promise<void> {
-		const { journalPath, headingLevel, dateFormat } = this.host.settings;
-		const heading = buildHeading(headingLevel, date.format(dateFormat));
-		await createDay(this.app, journalPath, heading, headingLevel, dateComparator(dateFormat, date));
-		await openJournalAt(this.app, journalPath, (text) => {
-			const line = findHeadingLine(text, heading);
-			return line < 0 ? null : { line: line + 1, ch: 0 };
-		});
-	}
-
-	private async run(action: () => Promise<void>): Promise<void> {
-		try {
-			await action();
-		} catch (error) {
-			console.error("Unidaily:", error);
-			new Notice(error instanceof Error ? error.message : String(error));
-		}
+	private dayHost(): DayHost {
+		return { app: this.app, settings: this.host.settings, t: this.host.t };
 	}
 }
 

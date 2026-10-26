@@ -56,6 +56,9 @@ const en = {
 	"settings.openCalendar.name": "Open calendar on startup",
 	"settings.openCalendar.desc":
 		"Add the calendar to the right sidebar when Obsidian starts and it isn't open. When off, use the \"Open calendar\" command.",
+	"settings.jumpToday.name": "Jump to today when opening the journal",
+	"settings.jumpToday.desc":
+		"When the journal file is opened, for example from a bookmark widget on your phone, put the cursor at the end of today. If today has no entries yet, ask whether to create it.",
 	"settings.conflicts.name": "Conflicting plugins",
 	"settings.conflicts.desc":
 		"These plugins create a separate file for each day. While they are on, a misclick can create daily notes outside your journal file.",
@@ -122,6 +125,8 @@ const zh: Record<StringKey, string> = {
 	"settings.frequentCount.desc": "记录窗口中显示的库中最常用的标签数量。0 表示不显示该行。",
 	"settings.openCalendar.name": "启动时自动打开日历",
 	"settings.openCalendar.desc": "Obsidian 启动时，如果日历没有打开，就把它放到右侧边栏。关闭后，可以用\"打开日历\"命令手动打开。",
+	"settings.jumpToday.name": "打开日记文件时跳到今天",
+	"settings.jumpToday.desc": "新打开日记文件时（比如从手机上的书签小组件进入），光标跳到今天内容的末尾；今天还没有记录时，询问是否新建。",
 	"settings.conflicts.name": "冲突检查",
 	"settings.conflicts.desc": "这些插件会为每一天生成单独的文件。开着它们时，误点可能会在日记文件之外生成日记。",
 	"settings.conflicts.none": "没有发现已启用的冲突插件。",

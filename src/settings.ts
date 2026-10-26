@@ -16,6 +16,8 @@ export interface UnidailySettings {
 	frequentTagCount: number;
 	/** Add the calendar to the right sidebar on startup when it isn't open. */
 	openCalendarOnStartup: boolean;
+	/** When the journal is newly opened, jump to today or offer to create it (FR-19). */
+	jumpToTodayOnOpen: boolean;
 }
 
 export const DEFAULT_SETTINGS: Readonly<UnidailySettings> = {
@@ -25,6 +27,7 @@ export const DEFAULT_SETTINGS: Readonly<UnidailySettings> = {
 	recentTagCount: 6,
 	frequentTagCount: 6,
 	openCalendarOnStartup: true,
+	jumpToTodayOnOpen: true,
 };
 
 export const MAX_TAG_COUNT = 20;
@@ -64,6 +67,8 @@ export function normalizeSettings(raw: unknown): UnidailySettings {
 			typeof data.openCalendarOnStartup === "boolean"
 				? data.openCalendarOnStartup
 				: DEFAULT_SETTINGS.openCalendarOnStartup,
+		jumpToTodayOnOpen:
+			typeof data.jumpToTodayOnOpen === "boolean" ? data.jumpToTodayOnOpen : DEFAULT_SETTINGS.jumpToTodayOnOpen,
 	};
 }
 

@@ -93,27 +93,49 @@ export async function openJournal(app: App, path: string): Promise<void> {
 	await app.workspace.getLeaf(false).openFile(file, { active: true });
 }
 
+/** Until this time, journal openings come from Unidaily itself (see `openedByUnidaily`). */
+let ownOpenUntil = 0;
+
+/**
+ * True while (and shortly after) Unidaily itself opens the journal, e.g. from
+ * the calendar. The "jump to today" handler (FR-19) ignores those openings.
+ */
+export function openedByUnidaily(): boolean {
+	return Date.now() < ownOpenUntil;
+}
+
 /**
  * Opens the journal in editing mode and puts the cursor where `locate` says,
- * computed from the editor's current text (calendar, FR-16).
+ * computed from the editor's current text (calendar FR-16, jump to today FR-19).
+ * Right after a write the editor may lag behind the file, so `locate` is
+ * retried for a moment until it finds its position.
  */
 export async function openJournalAt(
 	app: App,
 	path: string,
 	locate: (text: string) => Position | null,
 ): Promise<void> {
-	const file = await ensureJournalFile(app, path);
-	const leaf = findJournalLeaf(app, file) ?? app.workspace.getLeaf(false);
-	await leaf.openFile(file, { active: true, state: { mode: "source" } });
-	await app.workspace.revealLeaf(leaf);
+	ownOpenUntil = Date.now() + 2000;
+	try {
+		const file = await ensureJournalFile(app, path);
+		const leaf = findJournalLeaf(app, file) ?? app.workspace.getLeaf(false);
+		await leaf.openFile(file, { active: true, state: { mode: "source" } });
+		await app.workspace.revealLeaf(leaf);
 
-	const view = leaf.view;
-	if (!(view instanceof MarkdownView)) return;
-	const pos = locate(view.editor.getValue());
-	if (!pos) return;
-	view.editor.setCursor(pos);
-	view.editor.scrollIntoView({ from: pos, to: pos }, true);
-	view.editor.focus();
+		const view = leaf.view;
+		if (!(view instanceof MarkdownView)) return;
+		let pos = locate(view.editor.getValue());
+		for (let tries = 0; !pos && tries < 15; tries++) {
+			await new Promise((resolve) => window.setTimeout(resolve, 100));
+			pos = locate(view.editor.getValue());
+		}
+		if (!pos) return;
+		view.editor.setCursor(pos);
+		view.editor.scrollIntoView({ from: pos, to: pos }, true);
+		view.editor.focus();
+	} finally {
+		ownOpenUntil = Date.now() + 1000;
+	}
 }
 
 function findJournalLeaf(app: App, file: TFile) {

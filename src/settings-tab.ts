@@ -122,6 +122,18 @@ export class UnidailySettingTab extends PluginSettingTab {
 				},
 			},
 			{
+				name: t("settings.jumpToday.name"),
+				desc: t("settings.jumpToday.desc"),
+				render: (setting) => {
+					setting.addToggle((toggle) =>
+						toggle.setValue(settings.jumpToTodayOnOpen).onChange(async (value) => {
+							settings.jumpToTodayOnOpen = value;
+							await save();
+						}),
+					);
+				},
+			},
+			{
 				name: t("settings.conflicts.name"),
 				desc: t("settings.conflicts.desc"),
 				render: (setting) => {

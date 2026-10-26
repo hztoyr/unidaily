@@ -103,6 +103,7 @@ If you close the calendar, run **Open calendar** to bring it back.
 | Recent tags | 6 | Number of recent tags shown; 0 hides the row |
 | Frequent tags | 6 | Number of frequent tags shown; 0 hides the row |
 | Open calendar on startup | On | Adds the calendar to the right sidebar when Obsidian starts and it isn't open |
+| Jump to today when opening the journal | On | When the journal is newly opened (from a bookmark, the file list, a widget…), the cursor goes to the end of today; if today has no entries yet, you're asked once a day whether to create it |
 | Conflicting plugins | — | Lists plugins that are turned on and create a separate file for each day (the core *Daily notes* plugin, Calendar, Periodic Notes, Journals), each with a **Turn off** button that asks before doing anything |
 
 If one of those plugins is on when Obsidian starts, Unidaily shows a short notice once. They are only turned off when you confirm.
@@ -135,6 +136,9 @@ Yes. Set **Journal file** to something like `Journal/Daily Notes.md`. Missing fo
 
 **Does it work on mobile?**
 Yes, capturing and the calendar both work on Obsidian mobile.
+
+**Can I open today's journal from my phone's home screen?**
+Yes. Bookmark the journal file in Obsidian, then add Obsidian's bookmark widget to your home screen (iOS 18 or later). Opening the journal from the widget jumps to today, or asks whether to create today if it has no entries yet. Don't use the widget's "Open daily note" action: it belongs to the core *Daily notes* plugin and creates a separate file for each day.
 
 ## License
 
@@ -235,6 +239,7 @@ Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入�
 | 最近标签显示数量 | 6 | 显示多少个最近标签，0 表示不显示这一行 |
 | 常用标签显示数量 | 6 | 显示多少个常用标签，0 表示不显示这一行 |
 | 启动时自动打开日历 | 开 | Obsidian 启动时，如果日历没有打开，就把它放到右侧边栏 |
+| 打开日记文件时跳到今天 | 开 | 新打开日记文件时（从书签、文件列表、小组件等），光标跳到今天内容的末尾；今天还没有记录时，每天询问一次是否新建 |
 | 冲突检查 | — | 列出已启用、会为每一天生成单独文件的插件（Obsidian 自带的"日记"、Calendar、Periodic Notes、Journals），每个旁边有 **关闭** 按钮，点了会先确认 |
 
 Obsidian 启动时，如果发现这些插件中有开着的，会提示一次；只有你确认后才会关闭。
@@ -267,6 +272,9 @@ Obsidian 启动时，如果发现这些插件中有开着的，会提示一次�
 
 **手机上能用吗？**
 能。记录和日历在 Obsidian 移动端上都可以正常使用。
+
+**能从手机桌面直接打开今天的日记吗？**
+能。在 Obsidian 里把日记文件加入书签，再把 Obsidian 的书签小组件添加到手机桌面（需要 iOS 18 或更高版本）。从小组件打开日记时，会跳到今天；今天还没有记录时，会询问是否新建。不要用小组件里的"打开今日日记"（Open daily note），它属于 Obsidian 自带的"日记"插件，会为每一天生成单独的文件。
 
 ### 许可证
 

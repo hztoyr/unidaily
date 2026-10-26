@@ -39,6 +39,7 @@ describe("normalizeSettings", () => {
 			recentTagCount: 0,
 			frequentTagCount: 10,
 			openCalendarOnStartup: false,
+			jumpToTodayOnOpen: false,
 		};
 		assert.deepEqual(normalizeSettings(stored), stored);
 	});
@@ -62,6 +63,7 @@ describe("normalizeSettings", () => {
 			dateFormat: "  ",
 			recentTagCount: NaN,
 			openCalendarOnStartup: "false",
+			jumpToTodayOnOpen: 1,
 		});
 		assert.deepEqual(s, DEFAULT_SETTINGS);
 	});
@@ -69,6 +71,12 @@ describe("normalizeSettings", () => {
 	test("calendar on startup defaults to on", () => {
 		assert.equal(normalizeSettings({}).openCalendarOnStartup, true);
 		assert.equal(normalizeSettings({ openCalendarOnStartup: false }).openCalendarOnStartup, false);
+	});
+
+	test("jump to today on open defaults to on, also for settings saved by older versions", () => {
+		assert.equal(normalizeSettings({}).jumpToTodayOnOpen, true);
+		assert.equal(normalizeSettings({ openCalendarOnStartup: false }).jumpToTodayOnOpen, true);
+		assert.equal(normalizeSettings({ jumpToTodayOnOpen: false }).jumpToTodayOnOpen, false);
 	});
 
 	test("unknown fields are dropped", () => {

@@ -1,7 +1,8 @@
-import { Notice, Plugin, getAllTags, getLanguage, moment } from "obsidian";
+import { MarkdownView, Notice, Plugin, TFile, WorkspaceLeaf, getAllTags, getLanguage, moment } from "obsidian";
 import { CalendarView, VIEW_TYPE_CALENDAR } from "./calendar-view.ts";
 import { CaptureModal } from "./capture-modal.ts";
 import { findConflicts } from "./conflicts.ts";
+import { confirmCreateDay, findDayInText, openDayEnd, runReporting } from "./day-actions.ts";
 import { pluginState } from "./plugin-control.ts";
 import { createTranslator, type Translator } from "./i18n.ts";
 import { buildHeading, formatEntry, type EntryKind } from "./journal.ts";
@@ -11,6 +12,7 @@ import {
 	dateComparator,
 	fileNameOf,
 	openJournal,
+	openedByUnidaily,
 	readJournal,
 } from "./journal-file.ts";
 import { normalizeSettings, type UnidailySettings } from "./settings.ts";
@@ -20,6 +22,10 @@ import { countTags, frequentTags, recentTags } from "./tags.ts";
 export default class UnidailyPlugin extends Plugin {
 	settings!: UnidailySettings;
 	t!: Translator;
+	/** File each tab showed last, to tell a new opening of the journal from switching back to its tab. */
+	private lastFileOfLeaf = new WeakMap<WorkspaceLeaf, string | null>();
+	/** Day (YYYY-MM-DD) on which we already asked to create today, so we ask only once a day. */
+	private askedToCreate: string | null = null;
 
 	async onload() {
 		this.t = createTranslator(getLanguage());
@@ -64,6 +70,40 @@ export default class UnidailyPlugin extends Plugin {
 
 		// Once all plugins are loaded, warn once if a plugin that creates one file per day is on (FR-18).
 		this.app.workspace.onLayoutReady(() => this.warnAboutConflicts());
+
+		// Jump to today when the journal is opened, e.g. from a bookmark widget on the phone (FR-19).
+		this.registerEvent(this.app.workspace.on("file-open", (file) => this.onFileOpen(file)));
+	}
+
+	/**
+	 * Reacts only when the journal is newly opened in a tab: not when switching
+	 * back to a tab that already shows it, and not when Unidaily itself opened
+	 * it (the calendar jumps to the clicked day instead).
+	 */
+	private onFileOpen(file: TFile | null): void {
+		const leaf = this.app.workspace.getActiveViewOfType(MarkdownView)?.leaf;
+		if (!leaf) return;
+		const previous = this.lastFileOfLeaf.get(leaf);
+		this.lastFileOfLeaf.set(leaf, file?.path ?? null);
+
+		if (!this.settings.jumpToTodayOnOpen || !file || file.path !== this.settings.journalPath) return;
+		if (previous === file.path || openedByUnidaily()) return;
+		void runReporting(() => this.jumpToToday());
+	}
+
+	/** Cursor to the end of today; if today has no heading yet, ask once a day whether to create it. */
+	private async jumpToToday(): Promise<void> {
+		const today = moment();
+		const content = await readJournal(this.app, this.settings.journalPath);
+		const headingText = findDayInText(content, this.settings, today);
+		if (headingText !== undefined) {
+			await openDayEnd(this, headingText);
+			return;
+		}
+		const key = today.format("YYYY-MM-DD");
+		if (this.askedToCreate === key) return;
+		this.askedToCreate = key;
+		confirmCreateDay(this, today);
 	}
 
 	private warnAboutConflicts(): void {
