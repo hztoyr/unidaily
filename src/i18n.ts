@@ -40,6 +40,7 @@ const en = {
 	"calendar.nextMonth": "Next month",
 
 	// Settings
+	"settings.version.name": "Current version",
 	"settings.journalPath.name": "Journal file",
 	"settings.journalPath.desc": "Path of the file that holds all entries, relative to the vault root.",
 	"settings.headingLevel.name": "Date heading level",
@@ -113,6 +114,7 @@ const zh: Record<StringKey, string> = {
 	"calendar.thisMonth": "回到本月",
 	"calendar.nextMonth": "下个月",
 
+	"settings.version.name": "当前版本",
 	"settings.journalPath.name": "日记文件路径",
 	"settings.journalPath.desc": "存放所有记录的文件，相对于库根目录。",
 	"settings.headingLevel.name": "日期标题级别",

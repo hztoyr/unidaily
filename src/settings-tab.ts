@@ -58,6 +58,12 @@ export class UnidailySettingTab extends PluginSettingTab {
 
 		return [
 			{
+				// Read from manifest.json, so it always matches the installed build.
+				name: t("settings.version.name"),
+				desc: this.host.manifest.version,
+				render: () => {},
+			},
+			{
 				name: t("settings.journalPath.name"),
 				desc: t("settings.journalPath.desc"),
 				render: (setting) => {

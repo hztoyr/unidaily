@@ -100,6 +100,7 @@ If you close the calendar, run **Open calendar** to bring it back.
 
 | Setting | Default | Description |
 |---|---|---|
+| Current version | — | Shows the installed version of Unidaily |
 | Journal file | `Daily Notes.md` | Path of the journal, relative to the vault root |
 | Date heading level | `###` | Heading level used for each day (1–6) |
 | Date format | `YYYY-MM-DD dddd` | [Moment.js format](https://momentjs.com/docs/#/displaying/format/) for the date heading; a preview of today's heading is shown |
@@ -240,6 +241,7 @@ Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入�
 
 | 设置项 | 默认值 | 说明 |
 |---|---|---|
+| 当前版本 | — | 显示已安装的 Unidaily 版本 |
 | 日记文件路径 | `Daily Notes.md` | 日记文件的位置，相对于库根目录 |
 | 日期标题级别 | `###` | 每天的日期标题使用的标题级别（1–6） |
 | 日期格式 | `YYYY-MM-DD dddd` | 日期标题的 [Moment.js 格式](https://momentjs.com/docs/#/displaying/format/)，设置页会显示今天标题的预览 |
