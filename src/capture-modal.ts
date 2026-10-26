@@ -124,7 +124,8 @@ export class CaptureModal extends Modal {
 	private setKind(kind: EntryKind): void {
 		const { t, fileName } = this.options;
 		this.kind = kind;
-		const command = t(kind === "task" ? "command.captureTask" : "command.captureNote");
+		// Short "Note" / "Task" in the title; only the command list says "Capture" (1.1.3).
+		const command = t(kind === "task" ? "modal.task" : "modal.note");
 		this.titleEl.setText(t("modal.title", { command, file: fileName }));
 		for (const { kind: k, el } of this.kindButtons) {
 			el.toggleClass("is-active", k === kind);

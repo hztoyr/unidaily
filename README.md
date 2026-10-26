@@ -92,7 +92,7 @@ The calendar sits in the right sidebar and shows one month at a time.
 - Click a day without entries to create it: after you confirm, the day's heading is added in date order (not just at the top), the line under it starts with `- ` and the cursor is placed after it, ready to type (this can be turned off in the settings). Cancel leaves the file untouched. Future days can be created too, for plans or tasks.
 - The first day of the week follows Obsidian's language setting.
 
-Below the month there are two buttons, **Capture note** and **Capture task**, that open the capture window. They are handy on your phone, where there are no hotkeys.
+Below the month there are two buttons, **Note** and **Task**, that open the capture window. They are handy on your phone, where there are no hotkeys.
 
 If you close the calendar, run **Open calendar** to bring it back.
 

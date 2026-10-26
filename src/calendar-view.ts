@@ -111,9 +111,10 @@ export class CalendarView extends ItemView {
 		}
 
 		// Shortcuts to the capture window, handy on the phone where there are no hotkeys (1.0.8).
+		// Short labels "Note" / "Task"; only the command list says "Capture" (1.1.3).
 		const actions = root.createDiv({ cls: "unidaily-calendar-actions" });
-		this.captureButton(actions, "pencil", t("command.captureNote"), "note");
-		this.captureButton(actions, "check-square", t("command.captureTask"), "task");
+		this.captureButton(actions, "pencil", t("modal.note"), "note");
+		this.captureButton(actions, "check-square", t("modal.task"), "task");
 	}
 
 	private captureButton(parent: HTMLElement, icon: string, label: string, kind: EntryKind): void {
