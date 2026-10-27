@@ -41,6 +41,7 @@ describe("normalizeSettings", () => {
 			openCalendarOnStartup: false,
 			jumpToTodayOnOpen: false,
 			listMarkerOnNewDay: false,
+			askToCopyExternalFiles: false,
 		};
 		assert.deepEqual(normalizeSettings(stored), stored);
 	});
@@ -66,6 +67,7 @@ describe("normalizeSettings", () => {
 			openCalendarOnStartup: "false",
 			jumpToTodayOnOpen: 1,
 			listMarkerOnNewDay: "yes",
+			askToCopyExternalFiles: 0,
 		});
 		assert.deepEqual(s, DEFAULT_SETTINGS);
 	});
@@ -85,6 +87,12 @@ describe("normalizeSettings", () => {
 		assert.equal(normalizeSettings({}).listMarkerOnNewDay, true);
 		assert.equal(normalizeSettings({ jumpToTodayOnOpen: false }).listMarkerOnNewDay, true);
 		assert.equal(normalizeSettings({ listMarkerOnNewDay: false }).listMarkerOnNewDay, false);
+	});
+
+	test("asking to copy dropped outside files defaults to on, also for older settings", () => {
+		assert.equal(normalizeSettings({}).askToCopyExternalFiles, true);
+		assert.equal(normalizeSettings({ listMarkerOnNewDay: false }).askToCopyExternalFiles, true);
+		assert.equal(normalizeSettings({ askToCopyExternalFiles: false }).askToCopyExternalFiles, false);
 	});
 
 	test("unknown fields are dropped", () => {

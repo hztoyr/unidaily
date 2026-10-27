@@ -152,6 +152,18 @@ export class UnidailySettingTab extends PluginSettingTab {
 				},
 			},
 			{
+				name: t("settings.copyExternal.name"),
+				desc: t("settings.copyExternal.desc"),
+				render: (setting) => {
+					setting.addToggle((toggle) =>
+						toggle.setValue(settings.askToCopyExternalFiles).onChange(async (value) => {
+							settings.askToCopyExternalFiles = value;
+							await save();
+						}),
+					);
+				},
+			},
+			{
 				name: t("settings.conflicts.name"),
 				desc: t("settings.conflicts.desc"),
 				render: (setting) => {

@@ -63,6 +63,9 @@ const en = {
 	"settings.listMarker.name": "Start a new day with a list item",
 	"settings.listMarker.desc":
 		"When you create a day from the calendar or when opening the journal, the line under the new date heading starts with \"- \", ready to type. When off, the line is left empty.",
+	"settings.copyExternal.name": "Ask to copy dropped files into the vault",
+	"settings.copyExternal.desc":
+		"Some drops, for example from a chat app or with Ctrl held, only link to a file outside the vault, which breaks on another computer. When this is on, you're asked whether to copy the file into the attachment folder instead. Desktop only.",
 	"settings.conflicts.name": "Conflicting plugins",
 	"settings.conflicts.desc":
 		"These plugins create a separate file for each day. While they are on, a misclick can create daily notes outside your journal file.",
@@ -80,6 +83,16 @@ const en = {
 		"Unidaily: {names} can create a separate file for each day. You can turn it off under “Conflicting plugins” in Unidaily's settings.",
 	"notice.pluginDisabled": "Turned off “{name}”.",
 	"notice.pluginDisableFailed": "Could not turn off “{name}”. Please turn it off in Obsidian's settings.",
+
+	// Dropped files outside the vault
+	"drop.title": "File outside the vault",
+	"drop.message":
+		"Not in your vault: {files}. The link only works on this computer. Copy into the vault?",
+	"drop.separator": ", ",
+	"drop.copy": "Copy into vault",
+	"drop.keepLink": "Keep the link",
+	"drop.copied": "Copied {count} file(s) into the vault.",
+	"drop.copyFailed": "Could not copy {file}: {error}. The link was kept.",
 } as const;
 
 export type StringKey = keyof typeof en;
@@ -134,6 +147,8 @@ const zh: Record<StringKey, string> = {
 	"settings.jumpToday.desc": "新打开日记文件时（比如从手机上的书签小组件进入），光标跳到今天内容的末尾；今天还没有记录时，询问是否新建。",
 	"settings.listMarker.name": "新建日期后自动加列表符号",
 	"settings.listMarker.desc": "在日历上或打开日记文件时新建某一天后，日期标题下面一行自动写好\"- \"，可以直接输入。关闭后，这一行留空。",
+	"settings.copyExternal.name": "拖入库外文件时询问是否复制",
+	"settings.copyExternal.desc": "有些拖拽方式（比如从聊天软件里拖，或拖的时候按着 Ctrl）只会插入指向库外文件的链接，换一台电脑就打不开。开启后，会询问是否把文件复制到附件文件夹。只在电脑上有效。",
 	"settings.conflicts.name": "冲突检查",
 	"settings.conflicts.desc": "这些插件会为每一天生成单独的文件。开着它们时，误点可能会在日记文件之外生成日记。",
 	"settings.conflicts.none": "没有发现已启用的冲突插件。",
@@ -148,6 +163,14 @@ const zh: Record<StringKey, string> = {
 	"notice.conflicts": "Unidaily：{names} 会为每一天生成单独的文件，可以在 Unidaily 设置的“冲突检查”中关闭。",
 	"notice.pluginDisabled": "已关闭“{name}”。",
 	"notice.pluginDisableFailed": "无法关闭“{name}”，请在 Obsidian 设置中手动关闭。",
+
+	"drop.title": "文件不在库里",
+	"drop.message": "不在库里的文件：{files}。现在的链接只在这台电脑上能打开。要复制到库里吗？",
+	"drop.separator": "、",
+	"drop.copy": "复制到库里",
+	"drop.keepLink": "只插入链接",
+	"drop.copied": "已把 {count} 个文件复制到库里。",
+	"drop.copyFailed": "无法复制 {file}：{error}。链接保持不变。",
 };
 
 export type Locale = "en" | "zh";

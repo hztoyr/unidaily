@@ -109,6 +109,7 @@ If you close the calendar, run **Open calendar** to bring it back.
 | Open calendar on startup | On | Adds the calendar to the right sidebar when Obsidian starts and it isn't open |
 | Jump to today when opening the journal | On | When the journal is newly opened (from a bookmark, the file list, a widget…), the cursor goes to the end of today; if today has no entries yet, you're asked once a day whether to create it |
 | Start a new day with a list item | On | When you create a day (from the calendar or when opening the journal), the line under the new date heading starts with `- `, ready to type. When off, the line is left empty |
+| Ask to copy dropped files into the vault | On | When a drop only links to a file outside the vault (`file:///…`), asks whether to copy the file into your attachment folder instead. Desktop only |
 | Conflicting plugins | — | Lists plugins that are turned on and create a separate file for each day (the core *Daily notes* plugin, Calendar, Periodic Notes, Journals), each with a **Turn off** button that asks before doing anything |
 
 If one of those plugins is on when Obsidian starts, Unidaily shows a short notice once. They are only turned off when you confirm.
@@ -131,7 +132,7 @@ If you used QuickAdd's Capture together with Single File Daily Notes, your journ
 Yes. Open the journal file (**Open journal file**) and edit it like any other note. The capture window only adds new entries.
 
 **Does Unidaily go online or collect data?**
-No. It makes no network requests and collects nothing. It only reads and writes your journal file, and reads the tag index Obsidian already keeps for your vault.
+No. It makes no network requests and collects nothing. It reads and writes your journal file and reads the tag index Obsidian already keeps for your vault. When you drop a file that is outside the vault and choose **Copy into vault**, it reads that one file and saves a copy in your attachment folder.
 
 **Why does the calendar show no dot on a day I wrote about?**
 The calendar looks for headings that match your current heading level and date format exactly. If you changed either setting, older headings won't match. Headings written with English weekday names are still found when Obsidian is set to another language.
@@ -144,6 +145,9 @@ Yes, capturing and the calendar both work on Obsidian mobile.
 
 **Can I open today's journal from my phone's home screen?**
 Yes. Bookmark the journal file in Obsidian, then add Obsidian's bookmark widget to your home screen (iOS 18 or later). Opening the journal from the widget jumps to today, or asks whether to create today if it has no entries yet. Don't use the widget's "Open daily note" action: it belongs to the core *Daily notes* plugin and creates a separate file for each day.
+
+**I dropped a file into a note and got a `file:///` link. Why?**
+Normally Obsidian copies a dropped file into the vault. Some drops only hand Obsidian the file's location, for example from a chat app or with Ctrl held, and then you get a link to the original file, which won't open on another computer or your phone. Unidaily notices this and asks whether to copy the file into the vault; **Copy into vault** replaces the link with the copy, **Keep the link** leaves it as it is. Links that were already in your notes are not changed.
 
 ## License
 
@@ -250,6 +254,7 @@ Unidaily 把所有日记集中在**一个文件**里。按下快捷键，输入�
 | 启动时自动打开日历 | 开 | Obsidian 启动时，如果日历没有打开，就把它放到右侧边栏 |
 | 打开日记文件时跳到今天 | 开 | 新打开日记文件时（从书签、文件列表、小组件等），光标跳到今天内容的末尾；今天还没有记录时，每天询问一次是否新建 |
 | 新建日期后自动加列表符号 | 开 | 新建某一天后（在日历上或打开日记文件时），日期标题下面一行自动写好 `- `，可以直接输入；关闭后这一行留空 |
+| 拖入库外文件时询问是否复制 | 开 | 拖进笔记的文件只得到一个指向库外的链接（`file:///…`）时，询问是否把文件复制到附件文件夹。只在电脑上有效 |
 | 冲突检查 | — | 列出已启用、会为每一天生成单独文件的插件（Obsidian 自带的"日记"、Calendar、Periodic Notes、Journals），每个旁边有 **关闭** 按钮，点了会先确认 |
 
 Obsidian 启动时，如果发现这些插件中有开着的，会提示一次；只有你确认后才会关闭。
@@ -272,7 +277,7 @@ Obsidian 启动时，如果发现这些插件中有开着的，会提示一次�
 可以。执行 **打开日记文件**，像编辑普通笔记一样修改即可。记录窗口只负责添加新记录。
 
 **插件会联网或收集数据吗？**
-不会。插件不发起任何网络请求，也不收集任何数据。它只读写你的日记文件，并读取 Obsidian 本身就维护的库内标签索引。
+不会。插件不发起任何网络请求，也不收集任何数据。它读写你的日记文件，并读取 Obsidian 本身就维护的库内标签索引。当你拖入库外的文件并选择 **复制到库里** 时，它会读取这一个文件，在附件文件夹里保存一份副本。
 
 **为什么我写过记录的日子，日历上没有小圆点？**
 日历只认和当前"日期标题级别"、"日期格式"完全一致的标题。如果你改过这两项设置，旧标题就对不上了。另外，用英文星期名写的标题，在 Obsidian 切换成其他语言后仍然能找到。
@@ -285,6 +290,9 @@ Obsidian 启动时，如果发现这些插件中有开着的，会提示一次�
 
 **能从手机桌面直接打开今天的日记吗？**
 能。在 Obsidian 里把日记文件加入书签，再把 Obsidian 的书签小组件添加到手机桌面（需要 iOS 18 或更高版本）。从小组件打开日记时，会跳到今天；今天还没有记录时，会询问是否新建。不要用小组件里的"打开今日日记"（Open daily note），它属于 Obsidian 自带的"日记"插件，会为每一天生成单独的文件。
+
+**把文件拖进笔记后，得到的是 `file:///` 链接，为什么？**
+通常 Obsidian 会把拖进来的文件复制到库里。但有些拖拽方式只告诉 Obsidian 文件在哪里，比如从聊天软件里拖，或拖的时候按着 Ctrl，这时笔记里只有一个指向原文件的链接，换一台电脑或在手机上就打不开。Unidaily 发现这种情况会询问是否复制到库里：选 **复制到库里** 会用副本替换链接，选 **只插入链接** 则保持原样。已经写在笔记里的旧链接不会被改动。
 
 ### 许可证
 

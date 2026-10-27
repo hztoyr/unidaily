@@ -20,6 +20,8 @@ export interface UnidailySettings {
 	jumpToTodayOnOpen: boolean;
 	/** Start the line under a newly created day heading with `- ` (FR-20). */
 	listMarkerOnNewDay: boolean;
+	/** After a drop that links to a file outside the vault, ask to copy it in (FR-21). */
+	askToCopyExternalFiles: boolean;
 }
 
 export const DEFAULT_SETTINGS: Readonly<UnidailySettings> = {
@@ -31,6 +33,7 @@ export const DEFAULT_SETTINGS: Readonly<UnidailySettings> = {
 	openCalendarOnStartup: true,
 	jumpToTodayOnOpen: true,
 	listMarkerOnNewDay: true,
+	askToCopyExternalFiles: true,
 };
 
 export const MAX_TAG_COUNT = 20;
@@ -74,6 +77,10 @@ export function normalizeSettings(raw: unknown): UnidailySettings {
 			typeof data.jumpToTodayOnOpen === "boolean" ? data.jumpToTodayOnOpen : DEFAULT_SETTINGS.jumpToTodayOnOpen,
 		listMarkerOnNewDay:
 			typeof data.listMarkerOnNewDay === "boolean" ? data.listMarkerOnNewDay : DEFAULT_SETTINGS.listMarkerOnNewDay,
+		askToCopyExternalFiles:
+			typeof data.askToCopyExternalFiles === "boolean"
+				? data.askToCopyExternalFiles
+				: DEFAULT_SETTINGS.askToCopyExternalFiles,
 	};
 }
 

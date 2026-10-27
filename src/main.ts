@@ -3,6 +3,7 @@ import { CalendarView, VIEW_TYPE_CALENDAR } from "./calendar-view.ts";
 import { CaptureModal } from "./capture-modal.ts";
 import { findConflicts } from "./conflicts.ts";
 import { confirmCreateDay, findDayInText, openDayEnd, runReporting } from "./day-actions.ts";
+import { watchDrop } from "./drop-import.ts";
 import { pluginState } from "./plugin-control.ts";
 import { createTranslator, type Translator } from "./i18n.ts";
 import { buildHeading, formatEntry, type EntryKind } from "./journal.ts";
@@ -73,6 +74,9 @@ export default class UnidailyPlugin extends Plugin {
 
 		// Jump to today when the journal is opened, e.g. from a bookmark widget on the phone (FR-19).
 		this.registerEvent(this.app.workspace.on("file-open", (file) => this.onFileOpen(file)));
+
+		// Offer to copy files that a drop only linked to outside the vault (FR-21).
+		this.registerEvent(this.app.workspace.on("editor-drop", (_evt, editor, info) => watchDrop(this, editor, info)));
 	}
 
 	/**
